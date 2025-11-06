@@ -1,31 +1,86 @@
-export default async function DashboardPage() {
-  // Mock lessons for now
-  const lessons = [
-    {
-      id: "lesson-1",
-      title: "Making 10: A Super Strategy for Addition! 🎯",
-      description: "Learn to make 10 to solve addition",
-      order: 1,
-      completed: false,
-      locked: false,
-    },
-    {
-      id: "lesson-2",
-      title: "Doubles & Near-Doubles",
-      description: "Double the number and variations",
-      order: 2,
-      completed: false,
-      locked: true,
-    },
-    {
-      id: "lesson-3",
-      title: "Choosing Strategies",
-      description: "Pick the best strategy for each problem",
-      order: 3,
-      completed: false,
-      locked: true,
-    },
-  ];
+'use client';
+
+import { useEffect, useState } from 'react';
+import { LessonCard } from '@/components/LessonCard';
+
+interface LessonProgress {
+  lessonId: string;
+  lessonTitle: string;
+  completed: boolean;
+  masteryScore: number;
+  lastAttempt: string | null;
+}
+
+/**
+ * Dashboard page - displays all lessons with progress and lock states.
+ * Fetches user progress from /api/progress and determines which lessons are unlocked.
+ */
+export default function DashboardPage() {
+  const [lessons, setLessons] = useState<(LessonProgress & { locked: boolean })[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchProgress = async () => {
+      try {
+        const res = await fetch('/api/progress');
+        if (!res.ok) {
+          setError('Failed to load progress');
+          setLoading(false);
+          return;
+        }
+
+        const data = await res.json();
+        const progress: LessonProgress[] = data.progress;
+
+        // Determine locked states:
+        // - Lesson 1 is always available
+        // - Lesson 2 is available only if Lesson 1 is completed
+        // - Lesson 3 is available only if Lesson 2 is completed
+        const lessonsWithLocks = progress.map((lesson, index) => ({
+          ...lesson,
+          locked: index > 0 && !progress[index - 1].completed,
+        }));
+
+        setLessons(lessonsWithLocks);
+        setLoading(false);
+      } catch (err) {
+        console.error('[Dashboard] Error fetching progress:', err);
+        setError('Failed to load your progress');
+        setLoading(false);
+      }
+    };
+
+    fetchProgress();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <div className="text-center">
+          <div className="mb-4 text-6xl">📚</div>
+          <p className="text-2xl font-bold">Loading your lessons...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <div className="text-center">
+          <div className="mb-4 text-6xl">😕</div>
+          <p className="text-2xl font-bold mb-4">{error}</p>
+          <button
+            onClick={() => window.location.reload()}
+            className="kid-button-primary"
+          >
+            Try Again
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div>
@@ -33,41 +88,20 @@ export default async function DashboardPage() {
 
       <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
         {lessons.map((lesson) => (
-          <div
-            key={lesson.id}
-            className={`rounded-lg p-6 shadow-md transition-opacity ${
+          <LessonCard
+            key={lesson.lessonId}
+            id={lesson.lessonId}
+            title={lesson.lessonTitle}
+            description={
               lesson.locked
-                ? "bg-gray-100 opacity-50 cursor-not-allowed"
-                : "bg-white hover:shadow-lg"
-            }`}
-          >
-            <div className="mb-4 flex items-center justify-between">
-              <h3 className="text-xl font-bold text-kid-blue-700">
-                {lesson.title}
-              </h3>
-              {lesson.completed && <span className="text-2xl">✅</span>}
-              {lesson.locked && <span className="text-2xl">🔒</span>}
-            </div>
-
-            <p className="mb-6 text-gray-700">{lesson.description}</p>
-
-            {!lesson.locked && (
-              <a
-                href={`/lesson-info/${lesson.id}`}
-                className="inline-block kid-button-primary"
-              >
-                Start Lesson
-              </a>
-            )}
-            {lesson.locked && (
-              <button
-                disabled
-                className="inline-block rounded-full bg-gray-300 px-6 py-3 text-lg font-bold text-gray-600 cursor-not-allowed"
-              >
-                Locked
-              </button>
-            )}
-          </div>
+                ? 'Complete the previous lesson first!'
+                : lesson.completed
+                  ? `Mastery: ${Math.round(lesson.masteryScore)}%`
+                  : 'Ready to start?'
+            }
+            completed={lesson.completed}
+            locked={lesson.locked}
+          />
         ))}
       </div>
     </div>

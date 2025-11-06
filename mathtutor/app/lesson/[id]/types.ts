@@ -68,6 +68,7 @@ export interface SessionCompleteResponse {
   totalCount: number;
   masteryScore: number;
   passed: boolean;
+  allLessonsCompleted?: boolean;
   nextLessonUnlocked?: NextLessonInfo;
   summary: {
     topErrors: string[];
@@ -174,6 +175,7 @@ export interface ResultsScreenProps {
   correctCount: number;
   totalCount: number;
   lessonId: string;
+  allLessonsCompleted?: boolean;
   personalizeFeedback?: string;
   recommendedSubLesson?: {
     id: string;

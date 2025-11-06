@@ -58,15 +58,13 @@ export function FeedbackDisplay({
       <div
         className={`rounded-2xl shadow-2xl p-4 max-w-md w-full transform transition-all duration-300 pointer-events-auto ${
           correct
-            ? "bg-gradient-to-r from-kid-green-500 to-kid-green-600"
-            : "bg-gradient-to-r from-kid-yellow-500 to-orange-400"
+            ? "bg-linear-to-r from-kid-green-500 to-kid-green-600"
+            : "bg-linear-to-r from-kid-yellow-500 to-orange-400"
         }`}
       >
         <div className="text-center">
           {/* Result Icon & Title */}
-          <div className="text-4xl mb-2">
-            {correct ? "🎉" : "💪"}
-          </div>
+          <div className="text-4xl mb-2">{correct ? "🎉" : "💪"}</div>
           <h3 className="text-xl font-bold text-white mb-1">
             {correct ? "Correct!" : "Nice Try!"}
           </h3>

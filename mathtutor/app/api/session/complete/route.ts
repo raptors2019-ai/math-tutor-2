@@ -142,24 +142,31 @@ export async function POST(req: NextRequest) {
     // TODO: Implement error tag analysis for better sub-lesson suggestions
     getResponses(userId);
 
-    // Find next lesson
+    // Find next lesson and check for completion
     let nextLessonUnlocked = null;
+    let allLessonsCompleted = false;
+
     if (passed) {
       const currentLesson = await prisma.lesson.findUnique({
         where: { id: session.lessonId },
       });
 
       if (currentLesson) {
-        // Find lesson with order = current order + 1
-        const nextLesson = await prisma.lesson.findFirst({
-          where: { order: currentLesson.order + 1 },
-        });
+        // Check if this was the last lesson (order === 3)
+        if (currentLesson.order === 3) {
+          allLessonsCompleted = true;
+        } else {
+          // Find lesson with order = current order + 1
+          const nextLesson = await prisma.lesson.findFirst({
+            where: { order: currentLesson.order + 1 },
+          });
 
-        if (nextLesson) {
-          nextLessonUnlocked = {
-            id: nextLesson.id,
-            title: nextLesson.title,
-          };
+          if (nextLesson) {
+            nextLessonUnlocked = {
+              id: nextLesson.id,
+              title: nextLesson.title,
+            };
+          }
         }
       }
     }
@@ -183,6 +190,7 @@ export async function POST(req: NextRequest) {
         totalCount,
         masteryScore: parseFloat(masteryScore.toFixed(1)),
         passed,
+        allLessonsCompleted,
         summary: {
           topErrors: [], // TODO: implement error tag analysis
           personalizeFeedback,

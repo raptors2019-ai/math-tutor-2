@@ -50,6 +50,33 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Lesson not found" }, { status: 404 });
     }
 
+    // Check if lesson is unlocked (sequential unlocking based on previous lesson completion)
+    if (lesson.order > 1) {
+      // Find previous lesson
+      const previousLesson = await prisma.lesson.findFirst({
+        where: { order: lesson.order - 1 },
+      });
+
+      if (!previousLesson) {
+        return NextResponse.json(
+          { error: "Previous lesson not found" },
+          { status: 400 }
+        );
+      }
+
+      // Check if previous lesson is completed
+      const previousProgress = await prisma.userProgress.findUnique({
+        where: { userId_lessonId: { userId: user.id, lessonId: previousLesson.id } },
+      });
+
+      if (!previousProgress || !previousProgress.completed) {
+        return NextResponse.json(
+          { error: `Complete lesson ${previousLesson.order} first!` },
+          { status: 403 }
+        );
+      }
+    }
+
     if (lesson.items.length < 10) {
       return NextResponse.json(
         { error: "Lesson does not have enough items for a session" },

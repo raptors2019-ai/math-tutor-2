@@ -11,6 +11,7 @@
 
 "use client";
 
+import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { ResultsScreenProps } from "../types";
 
@@ -23,12 +24,14 @@ import { ResultsScreenProps } from "../types";
  * - Offers next steps based on performance
  * - Shows AI-generated personalized feedback for failed quizzes
  * - Large, tappable buttons for navigation
+ * - Redirects to completion page if all lessons completed
  *
  * @param masteryScore - Score out of 100 (e.g., 80.0)
  * @param passed - Whether score >= 90% (MASTERY_THRESHOLD)
  * @param correctCount - Number of correct answers
  * @param totalCount - Total questions answered
  * @param lessonId - ID of the lesson being attempted
+ * @param allLessonsCompleted - Whether all 3 lessons are completed
  * @param personalizeFeedback - AI-generated feedback based on errors
  * @param nextLessonUnlocked - Info about next lesson (if passed)
  * @param onRetry - Callback to restart quiz
@@ -41,6 +44,7 @@ export function ResultsScreen({
   correctCount,
   totalCount,
   lessonId,
+  allLessonsCompleted,
   personalizeFeedback,
   recommendedSubLesson,
   nextLessonUnlocked,
@@ -48,6 +52,16 @@ export function ResultsScreen({
   onHome,
 }: ResultsScreenProps) {
   const router = useRouter();
+
+  // Redirect to completion page if all lessons completed
+  useEffect(() => {
+    if (allLessonsCompleted && passed) {
+      const timer = setTimeout(() => {
+        router.push("/completion");
+      }, 2000); // Show results for 2 seconds before redirecting
+      return () => clearTimeout(timer);
+    }
+  }, [allLessonsCompleted, passed, router]);
 
   const handleBackToLesson = () => {
     router.push(`/lesson-info/${lessonId}`);
@@ -130,7 +144,11 @@ export function ResultsScreen({
                   {recommendedSubLesson.description}
                 </p>
                 <button
-                  onClick={() => router.push(`/lesson-info/${lessonId}`)}
+                  onClick={() =>
+                    router.push(
+                      `/lesson/${lessonId}/sub-lesson/${recommendedSubLesson.id}`
+                    )
+                  }
                   className="w-full rounded-lg bg-yellow-500 hover:bg-yellow-600 px-4 py-2 text-white font-bold transition-colors text-sm"
                 >
                   Review This Topic ✏️
