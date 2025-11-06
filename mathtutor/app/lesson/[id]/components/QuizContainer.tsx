@@ -276,6 +276,13 @@ export function QuizContainer({ lessonId }: QuizContainerProps) {
   };
 
   /**
+   * Return to lesson info page
+   */
+  const handleBackToLesson = () => {
+    router.push(`/lesson-info/${lessonId}`);
+  };
+
+  /**
    * Conditional rendering based on state
    * PATTERN: Show appropriate screen for current state
    */
@@ -335,21 +342,41 @@ export function QuizContainer({ lessonId }: QuizContainerProps) {
         )}
 
         {/* Question Screen */}
-        <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-b from-kid-blue-50 to-white px-4 py-8">
-          <div className="w-full max-w-2xl space-y-8">
-            {/* Question Display */}
-            <QuestionDisplay
-              question={currentQuestion.question}
-              currentNumber={state.currentQuestionIndex + 1}
-              totalQuestions={state.totalQuestions}
-            />
+        <div className="min-h-screen flex flex-col bg-gradient-to-b from-kid-blue-50 to-white px-4 py-8">
+          {/* Header with Navigation */}
+          <div className="mb-8 flex items-center justify-between max-w-2xl mx-auto w-full">
+            <button
+              onClick={handleBackToLesson}
+              className="text-lg font-bold text-kid-blue-600 hover:text-kid-blue-800 transition-colors"
+            >
+              ← Back to Lesson
+            </button>
+            <button
+              onClick={handleHome}
+              className="text-2xl font-bold text-kid-blue-700 hover:text-kid-blue-900 transition-colors"
+              title="Go to Dashboard"
+            >
+              🧮 MathTutor
+            </button>
+          </div>
 
-            {/* Answer Form */}
-            <AnswerForm
-              question={currentQuestion.question}
-              onSubmit={handleAnswerSubmit}
-              isSubmitting={state.isSubmitting}
-            />
+          {/* Quiz Content */}
+          <div className="flex flex-col items-center justify-center flex-1">
+            <div className="w-full max-w-2xl space-y-8">
+              {/* Question Display */}
+              <QuestionDisplay
+                question={currentQuestion.question}
+                currentNumber={state.currentQuestionIndex + 1}
+                totalQuestions={state.totalQuestions}
+              />
+
+              {/* Answer Form */}
+              <AnswerForm
+                question={currentQuestion.question}
+                onSubmit={handleAnswerSubmit}
+                isSubmitting={state.isSubmitting}
+              />
+            </div>
           </div>
         </div>
       </>

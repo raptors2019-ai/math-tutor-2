@@ -181,32 +181,34 @@ export function ResultsScreen({
           ) : null}
 
           {/* Action Buttons */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {/* Retry Button */}
-            <button
-              onClick={onRetry}
-              className="kid-button-primary py-4 text-lg font-bold rounded-2xl"
-            >
-              {passed ? "Practice Again" : "Try Again"} 🔄
-            </button>
+          {!passed || !nextLessonUnlocked ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {/* Retry Button - only show if failed */}
+              <button
+                onClick={onRetry}
+                className="kid-button-primary py-4 text-lg font-bold rounded-2xl"
+              >
+                {passed ? "Practice Again" : "Try Again"} 🔄
+              </button>
 
-            {/* Back to Lesson or Home Button */}
-            {!passed ? (
-              <button
-                onClick={handleBackToLesson}
-                className="rounded-2xl bg-blue-500 hover:bg-blue-600 px-6 py-4 text-lg font-bold text-white transition-colors"
-              >
-                Back to Lesson 📖
-              </button>
-            ) : (
-              <button
-                onClick={onHome}
-                className="rounded-2xl bg-gray-500 hover:bg-gray-600 px-6 py-4 text-lg font-bold text-white transition-colors"
-              >
-                Back to Dashboard 🏠
-              </button>
-            )}
-          </div>
+              {/* Back to Lesson or Home Button */}
+              {!passed ? (
+                <button
+                  onClick={handleBackToLesson}
+                  className="rounded-2xl bg-blue-500 hover:bg-blue-600 px-6 py-4 text-lg font-bold text-white transition-colors"
+                >
+                  Back to Lesson 📖
+                </button>
+              ) : (
+                <button
+                  onClick={onHome}
+                  className="rounded-2xl bg-gray-500 hover:bg-gray-600 px-6 py-4 text-lg font-bold text-white transition-colors"
+                >
+                  Back to Dashboard 🏠
+                </button>
+              )}
+            </div>
+          ) : null}
         </div>
 
         {/* Encouragement */}
