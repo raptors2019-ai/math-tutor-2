@@ -380,54 +380,92 @@ function getFallbackSummaryFeedback(
   examplesText: string,
   recommendedSubLesson?: { id: string; title: string; description: string }
 ): string {
-  // Tag-specific feedback tips
-  const feedbackTips: Record<string, string> = {
+  // Tag-specific feedback - more personal and friendly
+  const feedbackMessages: Record<string, { observation: string; tip: string }> = {
     // Doubles specific feedback
-    "double_miss_low":
-      "When you double a number like 6+6, count all the fingers or dots carefully to make sure you count each group correctly!",
-    "double_miss_high":
-      "Remember: doubling means exactly twice the number. 6+6 is 12, not 13! Try using two equal groups and counting together.",
-    "double_major_error":
-      "Let's practice what doubling really means. 6+6 means two groups of 6. Try making two equal piles with counters or your fingers.",
+    "double_miss_low": {
+      observation:
+        "When you worked on doubles like 6+6, you got answers that were 1 less than they should be. I think you might be missing one when you count.",
+      tip: "Try using your fingers or drawing dots for both groups. Count all the dots carefully - don't forget anyone!",
+    },
+    "double_miss_high": {
+      observation:
+        "On the doubles problems, you're answering 1 more than you should. Like on 6+6, you might be adding an extra one somewhere.",
+      tip: "Remember: 6+6 means exactly two groups of 6, nothing more. Try making two equal piles and counting them together slowly.",
+    },
+    "double_major_error": {
+      observation:
+        "I noticed your answers on the doubles problems are way off. It looks like the idea of doubling might feel confusing right now.",
+      tip: "Let's go back to basics: 6+6 means two groups of 6. Make two equal piles with your fingers or counters, then count them all together.",
+    },
 
     // Near-doubles feedback
-    "near_double_wrong_base":
-      "For 6+7, start with the double you know (6+6=12), then add 1 more! Near-doubles are always one more than a double.",
-    "near_double_wrong_double":
-      "Be careful to use the smaller number doubled! For 6+7, use 6+6, then add 1. Not 7+7!",
-    "near_double_off":
-      "You're using the right strategy! Just double-check your counting. Near-doubles = a double plus 1.",
+    "near_double_wrong_base": {
+      observation:
+        "On problems like 6+7, you're using the smaller number doubled instead of adding one more to it.",
+      tip: "Here's the trick for near-doubles: Start with a double you know (like 6+6=12), then add 1 more. So 6+7 is just 6+6 plus 1 more!",
+    },
+    "near_double_wrong_double": {
+      observation:
+        "On the near-doubles like 6+7, you're using the bigger number doubled instead of the smaller one.",
+      tip: "For 6+7, always start with the smaller number! So use 6+6 first, then just add 1. Don't jump to 7+7!",
+    },
+    "near_double_off": {
+      observation:
+        "You're using the right near-doubles strategy, but your final answer is off by 1.",
+      tip: "You're on the right track! Just count extra carefully when you do that last step. Near-doubles = a double plus exactly 1.",
+    },
 
     // Make-10 feedback
-    "complement_miss":
-      "When you make 10, don't forget the leftover numbers! Like 8+5: first make 10 (8+2), then add the 3 left over. That's 13!",
+    "complement_miss": {
+      observation:
+        "When you made 10, you kind of forgot about the leftover numbers. Like with 8+5, you stopped after making 10.",
+      tip: "Remember the two steps: First make 10 (8+2=10), then don't forget to add the leftovers! 8+5 is 10 + the 3 left over = 13!",
+    },
 
     // Basic errors
-    "incomplete_addition":
-      "Make sure you're adding BOTH numbers together. Don't forget one of them!",
-    "counting_error":
-      "Let's count more carefully together. Use your fingers, counters, or draw dots to help you see each number.",
-    "off_by_one":
-      "You're very close! Check your counting one more time. Maybe count on your fingers to double-check.",
-    "commutative_confusion":
-      "Remember: 5+3 and 3+5 both equal 8. The order doesn't matter in addition!",
+    "incomplete_addition": {
+      observation: "I noticed you're only using one number instead of adding both of them together.",
+      tip: "Make sure to add BOTH numbers! Don't skip the second one. Use your fingers or dots to keep track of both groups.",
+    },
+    "counting_error": {
+      observation:
+        "Your answers are way off from the correct ones, which tells me your counting might have gotten mixed up.",
+      tip: "Let's slow down and count more carefully. Use your fingers, counters, or draw dots - whatever helps you see the numbers clearly.",
+    },
+    "off_by_one": {
+      observation: "You're so close on your answers - just off by 1!",
+      tip: "You're almost there! Count on your fingers one more time to double-check. You've got this!",
+    },
+    "commutative_confusion": {
+      observation:
+        "You might be thinking that changing the order of the numbers changes the answer, but it doesn't!",
+      tip: "Remember: 5+3 and 3+5 both equal 8. The order doesn't matter - you'll always get the same answer!",
+    },
 
     // Default
-    general: "Review the strategy and try using counters, fingers, or drawing dots to help you visualize the problem.",
+    general: {
+      observation: "I noticed you had some trouble with this strategy.",
+      tip: "Try using counters, your fingers, or drawing dots to help you see the problem more clearly.",
+    },
   };
 
-  const tip =
-    feedbackTips[topError.tag] ||
-    feedbackTips[topError.tag.split("_")[0]] ||
-    feedbackTips.general;
+  const feedback =
+    feedbackMessages[topError.tag] ||
+    feedbackMessages[topError.tag.split("_")[0]] ||
+    feedbackMessages.general;
 
   const topicHint = recommendedSubLesson
-    ? ` I recommend reviewing "${recommendedSubLesson.title}" to practice this more.`
+    ? `\n\nI recommend spending some time on "${recommendedSubLesson.title}" - that will help you get even stronger!`
     : "";
 
-  return `Great effort on the quiz! 💪 You got ${incorrectCount} question${incorrectCount !== 1 ? "s" : ""} to work on. I noticed a pattern in your answers: ${getErrorTagDescription(topError.tag).toLowerCase()}
+  return `Great effort on the quiz! 💪 You got ${incorrectCount} question${incorrectCount !== 1 ? "s" : ""} to work on.
 
-Here's my tip to help: ${tip}${topicHint} Keep practicing - you're making progress! 🌟`;
+I looked at your answers and noticed something: ${feedback.observation}
+
+Here's what helps: ${feedback.tip}${topicHint}
+
+Keep going - every time you practice, you get better! 🌟`;
 }
 
 /**
