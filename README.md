@@ -23,16 +23,48 @@ This project showcases full-stack development with Next.js, Clerk auth, Supabase
 
 ## Setup Instructions
 
-1. **Clone the Repo**: `git clone <your-repo-url> && cd mathtutor-app`.
-2. **Install Dependencies**: `npm install`.
-3. **Env Variables**: Copy `.env.example` to `.env.local` and fill in:
-   - `NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY` and `CLERK_SECRET_KEY` (from Clerk dashboard).
-   - `DATABASE_URL` (from Supabase).
-   - `OPENAI_API_KEY` (from OpenAI).
-4. **Database Setup**:
-   - Run `npx prisma generate` and `npx prisma db push`.
-   - Seed data: Run `npx prisma db seed` (add a seed.ts script with the curriculum JSON).
-5. **Run Locally**: `npm run dev` — app at http://localhost:3000.
+### Prerequisites
+- Node.js 18+ (use nvm: `nvm install && nvm use`)
+- npm or yarn
+
+### Installation
+
+1. **Install Dependencies**:
+   ```bash
+   cd math-tutor_v2/mathtutor
+   npm install
+   ```
+
+2. **Configure Environment Variables**:
+   Create `.env.local` with Clerk test keys (already provided):
+   ```bash
+   NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_test_bGVhcm5pbmctc2F3Zmx5LTExLmNsZXJrLmFjY291bnRzLmRldiQ
+   CLERK_SECRET_KEY=sk_test_AImMiXKI6NJ43O7O7AJFxCclkESoss0UMCgLRpbe8R
+   NEXT_PUBLIC_CLERK_SIGN_IN_URL=/sign-in
+   NEXT_PUBLIC_CLERK_SIGN_UP_URL=/sign-up
+   NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL=/dashboard
+   NEXT_PUBLIC_CLERK_AFTER_SIGN_UP_URL=/dashboard
+   ```
+
+3. **Start Development Server**:
+   ```bash
+   npm run dev
+   ```
+   App available at http://localhost:3000
+
+4. **Test the App**:
+   - Homepage: Shows welcome + Sign In/Sign Up buttons
+   - Click Sign In: Redirects to Clerk sign-in modal
+   - Sign in with test email: Redirected to /dashboard
+   - Dashboard: Shows 3 lessons (first available, others locked)
+   - Click "Start Lesson": Placeholder page with back button
+
+### Validation
+
+- **Type checking**: `npm run type-check` (should pass)
+- **Linting**: `npm run lint` (should have no errors)
+- **Testing**: `npm test` (should pass with 3 test cases)
+- **Dev server**: `npm run dev` (should start cleanly)
 
 ## Running the App
 

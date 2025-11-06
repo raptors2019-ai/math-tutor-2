@@ -3,6 +3,25 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
+
+  /* Kid-Friendly Colors */
+  --kid-blue-50: #eff6ff;
+  --kid-blue-500: #3b82f6;
+  --kid-blue-700: #1d4ed8;
+
+  --kid-green-500: #10b981;
+  --kid-green-600: #059669;
+
+  --kid-purple-50: #f3f0ff;
+  --kid-purple-500: #a855f7;
+  --kid-purple-600: #9333ea;
+
+  --kid-yellow-500: #eab308;
+
+  --kid-pink-500: #ec4899;
+
+  --success-color: #10b981;
+  --error-color: #ef4444;
 }
 
 @theme inline {
@@ -10,6 +29,24 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+
+  /* Kid-Friendly Colors */
+  --color-kid-blue-50: var(--kid-blue-50);
+  --color-kid-blue-500: var(--kid-blue-500);
+  --color-kid-blue-700: var(--kid-blue-700);
+
+  --color-kid-green-500: var(--kid-green-500);
+  --color-kid-green-600: var(--kid-green-600);
+
+  --color-kid-purple-50: var(--kid-purple-50);
+  --color-kid-purple-500: var(--kid-purple-500);
+  --color-kid-purple-600: var(--kid-purple-600);
+
+  --color-kid-yellow-500: var(--kid-yellow-500);
+  --color-kid-pink-500: var(--kid-pink-500);
+
+  --color-success: var(--success-color);
+  --color-error: var(--error-color);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -23,4 +60,23 @@ body {
   background: var(--background);
   color: var(--foreground);
   font-family: Arial, Helvetica, sans-serif;
+}
+
+/* Kid-Friendly Button Styles */
+@layer components {
+  .kid-button {
+    @apply rounded-full px-6 py-3 text-lg font-bold text-white transition-colors;
+  }
+
+  .kid-button-primary {
+    @apply kid-button bg-kid-blue-500 hover:bg-kid-blue-700;
+  }
+
+  .kid-button-success {
+    @apply kid-button bg-kid-green-500 hover:bg-kid-green-600;
+  }
+
+  .kid-heading {
+    @apply text-4xl font-bold text-kid-blue-700 md:text-5xl;
+  }
 }
