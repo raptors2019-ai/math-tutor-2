@@ -47,8 +47,7 @@ model SubLesson {
   order            Int
   diagnosticPrompt String
 
-  lesson Lesson       @relation(fields: [lessonId], references: [id], onDelete: Cascade)
-  items  LessonItem[]
+  lesson Lesson @relation(fields: [lessonId], references: [id], onDelete: Cascade)
 
   @@unique([lessonId, order])
 }
