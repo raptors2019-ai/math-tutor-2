@@ -19,8 +19,8 @@ export function LoadingState({ message = "Loading your quiz..." }: LoadingStateP
       <div className="w-full max-w-2xl space-y-8">
         {/* Loading Title */}
         <div className="text-center">
-          <h1 className="kid-heading mb-4">🧮 Math Time!</h1>
-          <p className="text-xl text-gray-600">{message}</p>
+          <h1 className="kid-heading mb-4">📚 Getting your quiz ready...</h1>
+          <p className="text-xl font-bold text-kid-blue-700">{message}</p>
         </div>
 
         {/* Question Skeleton */}
