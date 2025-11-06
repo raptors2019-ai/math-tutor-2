@@ -18,6 +18,7 @@ async function main() {
   for (const lessonData of curriculum.lessons) {
     const lesson = await prisma.lesson.create({
       data: {
+        id: lessonData.id,
         order: lessonData.order,
         title: lessonData.title,
         description: lessonData.description,
@@ -31,6 +32,7 @@ async function main() {
     for (const subLessonData of lessonData.subLessons) {
       const subLesson = await prisma.subLesson.create({
         data: {
+          id: subLessonData.id,
           lessonId: lesson.id,
           title: subLessonData.title,
           description: subLessonData.description,
@@ -46,6 +48,7 @@ async function main() {
     for (const itemData of lessonData.items) {
       await prisma.lessonItem.create({
         data: {
+          id: itemData.id,
           lessonId: lesson.id,
           question: itemData.question,
           answer: itemData.answer,

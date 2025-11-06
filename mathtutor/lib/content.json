@@ -3,53 +3,127 @@
     {
       "id": "lesson-1",
       "order": 1,
-      "title": "Make-10 Strategy",
-      "description": "Learn to break numbers into 10 + more",
+      "title": "Making 10: A Super Strategy for Addition! 🎯",
+      "description": "Learn one of the coolest tricks for adding numbers - Making 10! Use complements and splitting to solve addition problems faster.",
       "strategyTag": "make-10",
+      "fullDescription": "Hi there, math friends! Today we're going to learn one of the coolest tricks for adding numbers: Making 10! Think about your fingers. You have 10 of them! When we add numbers, getting to 10 first makes everything easier. It's like a stepping stone that helps us jump across a river.",
       "subLessons": [
         {
           "id": "sub-1-1",
-          "title": "Introduction to Make-10",
-          "description": "Learn how to use 10 as an anchor number",
+          "title": "Complements to 10 🧩",
+          "description": "Learn the pairs that make 10! Every number has a special friend that pairs with it to make exactly 10. Master the pairs: 1+9, 2+8, 3+7, 4+6, and 5+5.",
           "order": 1,
-          "diagnosticPrompt": "The student struggles with complement facts to 10. Show them how to count up from a number to 10."
+          "diagnosticPrompt": "The student struggles with complement facts to 10. Show them how to count up from a number to 10. Remember the pairs: 1+9, 2+8, 3+7, 4+6, 5+5. Practice identifying which number is needed to make 10.",
+          "content": "What does 'complement' mean? It means 'the friend that helps you get to 10!' Every number has a special friend that pairs with it to make exactly 10. The pairs are: 1+9=10, 2+8=10, 3+7=10, 4+6=10, 5+5=10. Memory tip: If you know one pair, you know two! If 4+6=10, then 6+4=10 too!"
+        },
+        {
+          "id": "sub-1-2",
+          "title": "Splitting to Apply Make-10 ✂️",
+          "description": "Use the complement pairs to solve harder addition problems! Split numbers to make 10 first, then add what's left.",
+          "order": 2,
+          "diagnosticPrompt": "The student can identify complements but struggles to apply them. Show them step-by-step: 1) Find what the first number needs, 2) Split the second number, 3) Make 10, 4) Add the rest. Try examples like 7+8: need 3 to make 10, split 8 into 3+5, so 7+3=10, then 10+5=15.",
+          "content": "Now that you know the pairs, let's use them to solve harder problems! When adding two numbers, we can split one number to help us make 10 first. For example, 7+8: Start with 7, ask 'what does 7 need to make 10?', the answer is 3. Split 8 into 3 and 5. Give the 3 to the 7: 7+3=10. Add what's left: 10+5=15!"
         }
       ],
       "items": [
         {
           "id": "item-1-1",
-          "question": "8 + 5 = ?",
-          "answer": 13,
-          "strategyTag": "complement_miss",
-          "order": 1
+          "question": "What is 6 + 4 = ?",
+          "answer": 10,
+          "strategyTag": "make-10",
+          "order": 1,
+          "difficulty": "easy"
         },
         {
           "id": "item-1-2",
-          "question": "9 + 6 = ?",
-          "answer": 15,
-          "strategyTag": "complement_miss",
-          "order": 2
+          "question": "What is 3 + 7 = ?",
+          "answer": 10,
+          "strategyTag": "make-10",
+          "order": 2,
+          "difficulty": "easy"
         },
         {
           "id": "item-1-3",
-          "question": "7 + 4 = ?",
-          "answer": 11,
-          "strategyTag": "basic_addition",
-          "order": 3
+          "question": "What is 2 + 8 = ?",
+          "answer": 10,
+          "strategyTag": "make-10",
+          "order": 3,
+          "difficulty": "easy"
         },
         {
           "id": "item-1-4",
-          "question": "6 + 8 = ?",
-          "answer": 14,
-          "strategyTag": "complement_miss",
-          "order": 4
+          "question": "What pairs with 9 to make 10?",
+          "answer": 1,
+          "strategyTag": "complement",
+          "order": 4,
+          "difficulty": "easy"
         },
         {
           "id": "item-1-5",
-          "question": "5 + 7 = ?",
-          "answer": 12,
-          "strategyTag": "basic_addition",
-          "order": 5
+          "question": "What is 7 + 8 = ?",
+          "answer": 15,
+          "strategyTag": "complement_miss",
+          "order": 5,
+          "difficulty": "medium",
+          "hint": "7 needs 3 to make 10. Split 8 into 3 and 5. So 7+3=10, then 10+5=15"
+        },
+        {
+          "id": "item-1-6",
+          "question": "What is 9 + 4 = ?",
+          "answer": 13,
+          "strategyTag": "complement_miss",
+          "order": 6,
+          "difficulty": "medium",
+          "hint": "9 needs 1 to make 10. Split 4 into 1 and 3. So 9+1=10, then 10+3=13"
+        },
+        {
+          "id": "item-1-7",
+          "question": "What is 6 + 7 = ?",
+          "answer": 13,
+          "strategyTag": "complement_miss",
+          "order": 7,
+          "difficulty": "medium",
+          "hint": "6 needs 4 to make 10. Split 7 into 4 and 3. So 6+4=10, then 10+3=13"
+        },
+        {
+          "id": "item-1-8",
+          "question": "What is 8 + 5 = ?",
+          "answer": 13,
+          "strategyTag": "complement_miss",
+          "order": 8,
+          "difficulty": "medium"
+        },
+        {
+          "id": "item-1-9",
+          "question": "What is 5 + 9 = ?",
+          "answer": 14,
+          "strategyTag": "complement_miss",
+          "order": 9,
+          "difficulty": "medium"
+        },
+        {
+          "id": "item-1-10",
+          "question": "What is 8 + 6 = ?",
+          "answer": 14,
+          "strategyTag": "complement_miss",
+          "order": 10,
+          "difficulty": "medium"
+        },
+        {
+          "id": "item-1-11",
+          "question": "What is 7 + 6 = ?",
+          "answer": 13,
+          "strategyTag": "complement_miss",
+          "order": 11,
+          "difficulty": "medium"
+        },
+        {
+          "id": "item-1-12",
+          "question": "What is 4 + 9 = ?",
+          "answer": 13,
+          "strategyTag": "complement_miss",
+          "order": 12,
+          "difficulty": "medium"
         }
       ]
     },

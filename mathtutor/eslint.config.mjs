@@ -12,6 +12,8 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Exclude test files (they import from dynamic routes which breaks the next/eslint-plugin regex)
+    "**/__tests__/**",
   ]),
 ]);
 

@@ -2,15 +2,15 @@ export default async function DashboardPage() {
   // Mock lessons for now
   const lessons = [
     {
-      id: "1",
-      title: "Make-10 Strategy",
+      id: "lesson-1",
+      title: "Making 10: A Super Strategy for Addition! 🎯",
       description: "Learn to make 10 to solve addition",
       order: 1,
       completed: false,
       locked: false,
     },
     {
-      id: "2",
+      id: "lesson-2",
       title: "Doubles & Near-Doubles",
       description: "Double the number and variations",
       order: 2,
@@ -18,7 +18,7 @@ export default async function DashboardPage() {
       locked: true,
     },
     {
-      id: "3",
+      id: "lesson-3",
       title: "Choosing Strategies",
       description: "Pick the best strategy for each problem",
       order: 3,
@@ -53,7 +53,7 @@ export default async function DashboardPage() {
 
             {!lesson.locked && (
               <a
-                href={`/lesson/${lesson.id}`}
+                href={`/lesson-info/${lesson.id}`}
                 className="inline-block kid-button-primary"
               >
                 Start Lesson

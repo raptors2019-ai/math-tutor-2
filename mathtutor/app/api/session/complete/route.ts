@@ -3,6 +3,7 @@ import { auth } from "@clerk/nextjs/server";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { completeSession, getResponses, getSessionStats } from "@/lib/sessionManager";
+import { generateSummaryFeedback } from "@/lib/scoring/generateSummaryFeedback";
 
 /**
  * POST /api/session/complete
@@ -31,13 +32,59 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
     const { sessionId } = completeSchema.parse(body);
 
-    // Complete session in memory
-    const session = completeSession(userId);
+    // Try to get in-memory session, fall back to database
+    let session = completeSession(userId);
+
+    // If no in-memory session, fetch from database
     if (!session) {
-      return NextResponse.json(
-        { error: "No active session found" },
-        { status: 400 }
-      );
+      const dbSession = await prisma.session.findUnique({
+        where: { id: sessionId },
+      });
+
+      if (!dbSession) {
+        return NextResponse.json(
+          { error: "Session not found" },
+          { status: 404 }
+        );
+      }
+
+      // Validate userId matches
+      const sessionUser = await prisma.user.findUnique({
+        where: { id: dbSession.userId },
+      });
+
+      if (!sessionUser || sessionUser.clerkId !== userId) {
+        return NextResponse.json(
+          { error: "Unauthorized access to session" },
+          { status: 403 }
+        );
+      }
+
+      // Create a session object from database
+      session = {
+        sessionId: dbSession.id,
+        userId: dbSession.userId,
+        lessonId: dbSession.lessonId,
+        items: [],
+        responses: [],
+        startedAt: dbSession.startedAt,
+      };
+    }
+
+    // CRITICAL: Get stats BEFORE any further operations
+    let { correctCount, totalCount, masteryScore } = getSessionStats(userId);
+
+    // If stats are 0/0, fetch from database
+    if (totalCount === 0) {
+      const responses = await prisma.sessionResponse.findMany({
+        where: { sessionId: session.sessionId },
+      });
+
+      if (responses.length > 0) {
+        totalCount = responses.length;
+        correctCount = responses.filter(r => r.isCorrect).length;
+        masteryScore = (correctCount / totalCount) * 100;
+      }
     }
 
     if (session.sessionId !== sessionId) {
@@ -46,9 +93,6 @@ export async function POST(req: NextRequest) {
         { status: 400 }
       );
     }
-
-    // Get session stats
-    const { correctCount, totalCount, masteryScore } = getSessionStats(userId);
 
     // Fetch user
     const user = await prisma.user.findUnique({
@@ -120,22 +164,13 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    // Find recommended sub-lesson
-    let suggestedSubLesson = null;
+    // Generate personalized feedback for failed quizzes
+    let personalizeFeedback = null;
     if (!passed) {
-      // Find sub-lessons for this lesson (for remediation)
-      const subLessons = await prisma.subLesson.findMany({
-        where: { lessonId: session.lessonId },
-        take: 1, // Just suggest the first one for MVP
-      });
-
-      if (subLessons.length > 0) {
-        suggestedSubLesson = {
-          id: subLessons[0].id,
-          title: subLessons[0].title,
-          description: subLessons[0].description,
-        };
-      }
+      personalizeFeedback = await generateSummaryFeedback(
+        session.sessionId,
+        session.lessonId
+      );
     }
 
     return NextResponse.json(
@@ -147,7 +182,7 @@ export async function POST(req: NextRequest) {
         passed,
         summary: {
           topErrors: [], // TODO: implement error tag analysis
-          suggestedSubLesson,
+          personalizeFeedback,
         },
         nextLessonUnlocked,
       },
