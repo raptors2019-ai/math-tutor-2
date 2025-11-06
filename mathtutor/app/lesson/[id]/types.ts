@@ -72,6 +72,11 @@ export interface SessionCompleteResponse {
   summary: {
     topErrors: string[];
     personalizeFeedback?: string;
+    recommendedSubLesson?: {
+      id: string;
+      title: string;
+      description: string;
+    };
   };
 }
 
@@ -170,6 +175,11 @@ export interface ResultsScreenProps {
   totalCount: number;
   lessonId: string;
   personalizeFeedback?: string;
+  recommendedSubLesson?: {
+    id: string;
+    title: string;
+    description: string;
+  };
   nextLessonUnlocked?: NextLessonInfo;
   onRetry: () => void;
   onHome: () => void;

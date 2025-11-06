@@ -42,6 +42,7 @@ export function ResultsScreen({
   totalCount,
   lessonId,
   personalizeFeedback,
+  recommendedSubLesson,
   nextLessonUnlocked,
   onRetry,
   onHome,
@@ -112,9 +113,30 @@ export function ResultsScreen({
             <h2 className="text-xl font-bold text-yellow-900 mb-3">
               📖 What to Work On
             </h2>
-            <p className="text-gray-800 leading-relaxed">
+            <p className="text-gray-800 leading-relaxed mb-4">
               {personalizeFeedback}
             </p>
+
+            {/* Recommended Sub-Lesson */}
+            {recommendedSubLesson && (
+              <div className="bg-white rounded-2xl p-4 border-2 border-yellow-200">
+                <p className="text-sm text-gray-600 font-semibold mb-2">
+                  📚 Recommended Topic to Review:
+                </p>
+                <p className="text-lg font-bold text-kid-blue-700 mb-2">
+                  {recommendedSubLesson.title}
+                </p>
+                <p className="text-sm text-gray-700 mb-3">
+                  {recommendedSubLesson.description}
+                </p>
+                <button
+                  onClick={() => router.push(`/lesson-info/${lessonId}`)}
+                  className="w-full rounded-lg bg-yellow-500 hover:bg-yellow-600 px-4 py-2 text-white font-bold transition-colors text-sm"
+                >
+                  Review This Topic ✏️
+                </button>
+              </div>
+            )}
           </div>
         )}
 

@@ -166,11 +166,14 @@ export async function POST(req: NextRequest) {
 
     // Generate personalized feedback for failed quizzes
     let personalizeFeedback = null;
+    let recommendedSubLesson = null;
     if (!passed) {
-      personalizeFeedback = await generateSummaryFeedback(
+      const result = await generateSummaryFeedback(
         session.sessionId,
         session.lessonId
       );
+      personalizeFeedback = result.feedback;
+      recommendedSubLesson = result.recommendedSubLesson;
     }
 
     return NextResponse.json(
@@ -183,6 +186,7 @@ export async function POST(req: NextRequest) {
         summary: {
           topErrors: [], // TODO: implement error tag analysis
           personalizeFeedback,
+          recommendedSubLesson,
         },
         nextLessonUnlocked,
       },

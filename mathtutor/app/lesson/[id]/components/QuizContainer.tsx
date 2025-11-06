@@ -305,6 +305,7 @@ export function QuizContainer({ lessonId }: QuizContainerProps) {
         totalCount={state.results.totalCount}
         lessonId={lessonId}
         personalizeFeedback={state.results.summary.personalizeFeedback}
+        recommendedSubLesson={state.results.summary.recommendedSubLesson}
         nextLessonUnlocked={state.results.nextLessonUnlocked}
         onRetry={handleRetry}
         onHome={handleHome}

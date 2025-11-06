@@ -50,7 +50,7 @@ export function QuestionDisplay({
 
         {/* Question Text */}
         <div className="text-center">
-          <p className="text-5xl font-bold text-kid-blue-700 md:text-6xl">
+          <p className="text-4xl font-bold text-kid-blue-700 md:text-6xl">
             {question}
           </p>
         </div>
