@@ -1,5 +1,6 @@
 import OpenAI from "openai";
 import { prisma } from "@/lib/prisma";
+import { tagErrors } from "@/lib/scoring/tagErrors";
 
 /**
  * Error Pattern Analysis for Summary Feedback
@@ -162,14 +163,30 @@ async function getRecommendedSubLesson(
   try {
     // Map error patterns to sub-lesson topics
     // For lesson-1 (Make-10):
-    //   - "make-10" or "complement" -> sub-lesson-1-1 (Complements to 10)
-    //   - "splitting" -> sub-lesson-1-2 (Splitting to Apply Make-10)
+    //   - "make-10" or "complement" -> sub-1-1 (Complements to 10)
+    //   - "splitting" -> sub-1-2 (Splitting to Apply Make-10)
+    // For lesson-2 (Doubles and Near-Doubles):
+    //   - "double_*" -> sub-2-1 (Doubles)
+    //   - "near_double_*" -> sub-2-2 (Near-Doubles)
+    // For lesson-3 (Choosing Strategies):
+    //   - any -> sub-3-1 (Strategy Selection)
     const subLessonMap: Record<string, string> = {
+      // Lesson 1 (Make-10)
       "make-10": "sub-1-1",
       complement: "sub-1-1",
       "complement_miss": "sub-1-1",
       splitting: "sub-1-2",
       "make-10-splitting": "sub-1-2",
+      // Lesson 2 (Doubles)
+      "double_miss_low": "sub-2-1",
+      "double_miss_high": "sub-2-1",
+      "double_major_error": "sub-2-1",
+      doubles: "sub-2-1",
+      // Lesson 2 (Near-Doubles)
+      "near_double_wrong_base": "sub-2-2",
+      "near_double_wrong_double": "sub-2-2",
+      "near_double_off": "sub-2-2",
+      "near-double": "sub-2-2",
     };
 
     // Get the mapped sub-lesson ID
@@ -219,22 +236,34 @@ async function getRecommendedSubLesson(
 
 /**
  * Analyze error patterns from responses
+ * Recalculates error tags from the actual answers to get specific error patterns
  */
 function analyzeErrorPatterns(responses: any[]): ErrorPattern[] {
   const patternMap = new Map<string, ErrorPattern>();
 
   responses.forEach((response) => {
-    const tags = response.item.strategyTag || "general";
+    // Recalculate error tags for this response
+    const errorTags = tagErrors(
+      response.item.question,
+      response.answer,
+      response.item.answer
+    );
 
-    if (!patternMap.has(tags)) {
-      patternMap.set(tags, {
-        tag: tags,
+    // Use the primary error tag, or fall back to strategy tag if no specific error
+    const primaryTag =
+      errorTags.length > 0
+        ? errorTags[0] // Use first/most specific error tag
+        : response.item.strategyTag || "general";
+
+    if (!patternMap.has(primaryTag)) {
+      patternMap.set(primaryTag, {
+        tag: primaryTag,
         count: 0,
         examples: [],
       });
     }
 
-    const pattern = patternMap.get(tags)!;
+    const pattern = patternMap.get(primaryTag)!;
     pattern.count++;
 
     if (pattern.examples.length < 3) {
@@ -263,17 +292,24 @@ function buildSummaryPrompt(
   const lessonContext =
     lessonId === "lesson-1"
       ? 'The lesson is about "Making 10" - using complements and splitting numbers to solve addition.'
-      : "The lesson is about a specific math strategy for addition.";
+      : lessonId === "lesson-2"
+        ? 'The lesson is about "Doubles and Near-Doubles" - recognizing patterns like 6+6 and 6+7 to solve addition quickly.'
+        : lessonId === "lesson-3"
+          ? 'The lesson is about "Choosing Strategies" - deciding whether to use Make-10, Doubles, or Near-Doubles to solve addition.'
+          : "The lesson is about a specific math strategy for addition.";
 
   const subLessonHint = recommendedSubLesson
     ? `\nThey should review the topic: "${recommendedSubLesson.title}"`
     : "";
 
+  // Build error description with specific context
+  const errorContext = getErrorTagDescription(topError.tag);
+
   return `You are a kindergarten math teacher providing encouragement and guidance to a student who didn't yet master a lesson.
 
 ${lessonContext}
 
-The student got ${incorrectCount} questions wrong, with the most common issue being related to: "${topError.tag}"
+The student got ${incorrectCount} questions wrong, with the most common issue being: ${errorContext}
 
 Examples of what went wrong:
 ${examplesText}
@@ -282,11 +318,57 @@ ${subLessonHint}
 
 Write a warm, encouraging summary feedback (2-3 sentences, 50-80 words) that:
 1. Acknowledges their effort positively
-2. Identifies the specific pattern they struggled with (focus on the strategy/technique, not just "you got it wrong")
-3. Gives ONE concrete, specific tip for improvement
+2. Identifies the SPECIFIC mistake they made (e.g., "it looks like you got double minus 1" not just "you got it wrong")
+3. Gives ONE concrete, specific tip that directly addresses their mistake
 4. Ends encouragingly
 
 Use simple, kid-friendly language. No jargon.`;
+}
+
+/**
+ * Get specific description of an error tag for AI prompt context
+ */
+function getErrorTagDescription(tag: string): string {
+  const descriptions: Record<string, string> = {
+    // Doubles errors
+    "double_miss_low":
+      'The student got the double answer minus 1. For example, on 6+6, they answered 11 instead of 12. They may have forgotten to count one.',
+    "double_miss_high":
+      'The student got the double answer plus 1. For example, on 6+6, they answered 13 instead of 12. They added one too many.',
+    "double_major_error":
+      "The student's answer is way off from the correct double. They may be confused about what doubling means.",
+
+    // Near-double errors
+    "near_double_wrong_base":
+      "The student used the smaller number doubled instead of adding 1 to it. For example, on 6+7, they used 6+6 instead of adding 1 more.",
+    "near_double_wrong_double":
+      "The student used the larger number doubled instead of the smaller. For example, on 6+7, they got the answer for 7+7 instead.",
+    "near_double_off":
+      "The student tried the near-double strategy but was off by 1 in the final answer.",
+
+    // Make-10 errors
+    "complement_miss":
+      "The student got the answer minus 1 or forgot the remainder after making 10. For example, on 8+5, they answered 12 instead of 13.",
+
+    // Basic errors
+    "incomplete_addition":
+      "The student only wrote down one of the numbers instead of adding them both together.",
+    "counting_error":
+      "The student's answer is more than 2 away from the correct answer. They may have miscounted or confused the numbers.",
+    "off_by_one":
+      "The student's answer is exactly 1 away from the correct answer.",
+    "commutative_confusion":
+      "The student may be confused about whether the order of numbers matters in addition.",
+
+    // Default
+    general: "a specific aspect of addition strategies",
+  };
+
+  return (
+    descriptions[tag] ||
+    descriptions[tag.split("_")[0]] ||
+    descriptions.general
+  );
 }
 
 /**
@@ -298,24 +380,54 @@ function getFallbackSummaryFeedback(
   examplesText: string,
   recommendedSubLesson?: { id: string; title: string; description: string }
 ): string {
-  const errorDescriptions: Record<string, string> = {
-    "make-10": "understanding how to use the Make-10 strategy",
-    complement: "finding complement pairs that make 10",
-    "complement_miss": "finding numbers that make 10",
-    splitting: "splitting numbers correctly",
-    general: "solving these types of problems",
+  // Tag-specific feedback tips
+  const feedbackTips: Record<string, string> = {
+    // Doubles specific feedback
+    "double_miss_low":
+      "When you double a number like 6+6, count all the fingers or dots carefully to make sure you count each group correctly!",
+    "double_miss_high":
+      "Remember: doubling means exactly twice the number. 6+6 is 12, not 13! Try using two equal groups and counting together.",
+    "double_major_error":
+      "Let's practice what doubling really means. 6+6 means two groups of 6. Try making two equal piles with counters or your fingers.",
+
+    // Near-doubles feedback
+    "near_double_wrong_base":
+      "For 6+7, start with the double you know (6+6=12), then add 1 more! Near-doubles are always one more than a double.",
+    "near_double_wrong_double":
+      "Be careful to use the smaller number doubled! For 6+7, use 6+6, then add 1. Not 7+7!",
+    "near_double_off":
+      "You're using the right strategy! Just double-check your counting. Near-doubles = a double plus 1.",
+
+    // Make-10 feedback
+    "complement_miss":
+      "When you make 10, don't forget the leftover numbers! Like 8+5: first make 10 (8+2), then add the 3 left over. That's 13!",
+
+    // Basic errors
+    "incomplete_addition":
+      "Make sure you're adding BOTH numbers together. Don't forget one of them!",
+    "counting_error":
+      "Let's count more carefully together. Use your fingers, counters, or draw dots to help you see each number.",
+    "off_by_one":
+      "You're very close! Check your counting one more time. Maybe count on your fingers to double-check.",
+    "commutative_confusion":
+      "Remember: 5+3 and 3+5 both equal 8. The order doesn't matter in addition!",
+
+    // Default
+    general: "Review the strategy and try using counters, fingers, or drawing dots to help you visualize the problem.",
   };
 
-  const errorDesc =
-    errorDescriptions[topError.tag] ||
-    errorDescriptions[topError.tag.split("_")[0]] ||
-    errorDescriptions.general;
+  const tip =
+    feedbackTips[topError.tag] ||
+    feedbackTips[topError.tag.split("_")[0]] ||
+    feedbackTips.general;
 
   const topicHint = recommendedSubLesson
-    ? ` Try reviewing "${recommendedSubLesson.title}" to strengthen this skill.`
+    ? ` I recommend reviewing "${recommendedSubLesson.title}" to practice this more.`
     : "";
 
-  return `Great effort on the quiz! 💪 You got ${incorrectCount} question${incorrectCount !== 1 ? "s" : ""} to think about. I noticed you're working on ${errorDesc}. Try drawing a picture or using your fingers to help you see how the numbers break apart.${topicHint} Keep practicing - you're making progress! 🌟`;
+  return `Great effort on the quiz! 💪 You got ${incorrectCount} question${incorrectCount !== 1 ? "s" : ""} to work on. I noticed a pattern in your answers: ${getErrorTagDescription(topError.tag).toLowerCase()}
+
+Here's my tip to help: ${tip}${topicHint} Keep practicing - you're making progress! 🌟`;
 }
 
 /**
