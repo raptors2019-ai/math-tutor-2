@@ -23,8 +23,10 @@ describe("HomePage", () => {
 
   it("displays sign in and sign up buttons", async () => {
     render(await HomePage());
-    expect(screen.getByText(/Sign In/i)).toBeInTheDocument();
-    expect(screen.getByText(/Sign Up/i)).toBeInTheDocument();
+    const signInButtons = screen.getAllByText(/Sign In/i);
+    const signUpButtons = screen.getAllByText(/Sign Up/i);
+    expect(signInButtons.length).toBeGreaterThan(0);
+    expect(signUpButtons.length).toBeGreaterThan(0);
   });
 
   it("displays kid-friendly messaging", async () => {
