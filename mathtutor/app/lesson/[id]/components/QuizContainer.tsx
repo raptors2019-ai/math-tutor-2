@@ -65,12 +65,13 @@ export function QuizContainer({ lessonId }: QuizContainerProps) {
   const router = useRouter();
 
   /**
-   * Initialize session on mount
-   * CRITICAL: Only runs once (empty dependency array)
-   * PATTERN: Fetch quiz data from /api/session/start
+   * Initialize session - can be called from mount or retry
+   * CRITICAL: This function is extracted so it can be called from handleRetry
    */
-  useEffect(() => {
-    if (!user?.id) {
+  const initializeSession = async (currentUserId?: string) => {
+    const userId = currentUserId || user?.id;
+
+    if (!userId) {
       setState((prev) => ({
         ...prev,
         isLoading: false,
@@ -79,45 +80,51 @@ export function QuizContainer({ lessonId }: QuizContainerProps) {
       return;
     }
 
-    const initializeSession = async () => {
-      try {
-        setState((prev) => ({ ...prev, isLoading: true, error: null }));
+    try {
+      setState((prev) => ({ ...prev, isLoading: true, error: null }));
 
-        const response = await fetch("/api/session/start", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ lessonId }),
-        });
+      const response = await fetch("/api/session/start", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ lessonId }),
+      });
 
-        if (!response.ok) {
-          const errData = await response.json();
-          throw new Error(errData.error || "Failed to start session");
-        }
-
-        const data: SessionStartResponse = await response.json();
-
-        setState((prev) => ({
-          ...prev,
-          sessionId: data.sessionId,
-          questions: data.questions,
-          totalQuestions: data.totalQuestions,
-          isLoading: false,
-        }));
-      } catch (err) {
-        const errorMessage =
-          err instanceof Error ? err.message : "Failed to load quiz";
-
-        setState((prev) => ({
-          ...prev,
-          isLoading: false,
-          error: errorMessage,
-        }));
-
-        console.error("[QuizContainer] Session init error:", err);
+      if (!response.ok) {
+        const errData = await response.json();
+        throw new Error(errData.error || "Failed to start session");
       }
-    };
 
-    initializeSession();
+      const data: SessionStartResponse = await response.json();
+
+      setState((prev) => ({
+        ...prev,
+        sessionId: data.sessionId,
+        questions: data.questions,
+        totalQuestions: data.totalQuestions,
+        isLoading: false,
+      }));
+    } catch (err) {
+      const errorMessage =
+        err instanceof Error ? err.message : "Failed to load quiz";
+
+      setState((prev) => ({
+        ...prev,
+        isLoading: false,
+        error: errorMessage,
+      }));
+
+      console.error("[QuizContainer] Session init error:", err);
+    }
+  };
+
+  /**
+   * Mount effect - initialize session on component load
+   * CRITICAL: Runs when user authenticates
+   */
+  useEffect(() => {
+    if (user?.id) {
+      initializeSession(user.id);
+    }
   }, [user?.id, lessonId]);
 
   /**
@@ -259,13 +266,20 @@ export function QuizContainer({ lessonId }: QuizContainerProps) {
 
   /**
    * Retry the quiz - restart from beginning
+   * CRITICAL: Must call initializeSession to fetch a new session
    */
-  const handleRetry = () => {
+  const handleRetry = async () => {
+    // Reset state and reinitialize the session
     setState({
       ...initialState,
       lessonId,
       isLoading: true,
     });
+
+    // Fetch a fresh session
+    if (user?.id) {
+      await initializeSession(user.id);
+    }
   };
 
   /**
@@ -347,7 +361,7 @@ export function QuizContainer({ lessonId }: QuizContainerProps) {
           <div className="mb-8 flex items-center justify-between max-w-2xl mx-auto w-full">
             <button
               onClick={handleBackToLesson}
-              className="text-lg font-bold text-kid-blue-600 hover:text-kid-blue-800 transition-colors"
+              className="text-lg font-bold text-kid-blue-700 hover:text-kid-blue-900 transition-colors"
             >
               ← Back to Lesson
             </button>
