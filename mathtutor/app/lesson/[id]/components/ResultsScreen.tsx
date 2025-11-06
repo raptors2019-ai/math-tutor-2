@@ -171,7 +171,7 @@ export function ResultsScreen({
                   {nextLessonUnlocked.title}
                 </p>
                 <a
-                  href={`/lesson/${nextLessonUnlocked.id}`}
+                  href={`/lesson-info/${nextLessonUnlocked.id}`}
                   className="inline-block kid-button-success"
                 >
                   Start Next Lesson →
