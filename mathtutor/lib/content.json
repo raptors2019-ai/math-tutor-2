@@ -130,60 +130,153 @@
     {
       "id": "lesson-2",
       "order": 2,
-      "title": "Doubles & Near-Doubles",
-      "description": "Double numbers and use them to solve similar problems",
+      "title": "Doubles and Near-Doubles: The Pattern Power! 🎲",
+      "description": "Learn the power of doubles and use them to solve addition problems faster! Discover how knowing doubles helps you solve near-doubles like 6 + 7.",
       "strategyTag": "doubles",
+      "fullDescription": "Welcome back, math superstars! You've already learned the Make-10 strategy. Now we're going to discover another amazing trick: Doubles and Near-Doubles! Doubles are when you add a number to itself. It's like looking in a mirror—everything matches! Once you know your doubles, adding becomes SO much faster!",
       "subLessons": [
         {
           "id": "sub-2-1",
-          "title": "Doubles Facts",
-          "description": "Learn doubles: 5+5, 6+6, etc.",
+          "title": "Basic Doubles Pairs 👯",
+          "description": "Learn the doubles facts from 1+1 to 10+10. These are like magic numbers you'll use all the time!",
           "order": 1,
-          "diagnosticPrompt": "The student forgot their doubles facts. Practice with visual manipulatives."
+          "diagnosticPrompt": "The student struggles with memorizing doubles facts. Help them see the pattern: 1+1=2, 2+2=4, 3+3=6... Notice each answer goes up by 2! Use visual aids like fingers or objects to show how doubles work. Practice the basic doubles repeatedly until they become automatic.",
+          "content": "Doubles are when you add a number to itself. The doubles facts are: 1+1=2, 2+2=4, 3+3=6, 4+4=8, 5+5=10, 6+6=12, 7+7=14, 8+8=16, 9+9=18, 10+10=20. Notice the pattern! Each double answer goes up by 2: 2, 4, 6, 8, 10, 12, 14... It's like counting by 2s! Memory tip: If you know one pair, you know it both ways! If 4+4=8, then 4+4=8 (it's the same!)."
         },
         {
           "id": "sub-2-2",
-          "title": "Near-Doubles",
-          "description": "Use doubles to solve 5+6, 6+7, etc.",
+          "title": "Adjusting for Near-Doubles ➕➖",
+          "description": "Use doubles to solve problems where numbers are almost the same, like 5 + 6 or 8 + 7.",
           "order": 2,
-          "diagnosticPrompt": "The student doesn't see the connection to doubles. Show them: 6+7 is one more than 6+6."
+          "diagnosticPrompt": "The student can do doubles but struggles with near-doubles. Show them the connection: 5+6 is just 5+5 plus 1. Break it down step-by-step: 1) Start with the double you know, 2) Check if the other number is more or less, 3) Adjust by adding or subtracting. Try examples like: 6+7 = (6+6) + 1 = 12 + 1 = 13.",
+          "content": "When numbers are close (just 1 or 2 apart), we can use doubles to help! Start with the double, then adjust. Example: 5+6 = (5+5) + 1 = 10 + 1 = 11. Another example: 8+7 means 7 is one LESS than 8, so 8+8=16, then 16-1=15. The trick is to find the double you know, then add or subtract 1 (or 2) to adjust!"
         }
       ],
       "items": [
         {
           "id": "item-2-1",
-          "question": "3 + 3 = ?",
-          "answer": 6,
+          "question": "What is 1 + 1 = ?",
+          "answer": 2,
           "strategyTag": "doubles",
-          "order": 1
+          "order": 1,
+          "difficulty": "easy"
         },
         {
           "id": "item-2-2",
-          "question": "4 + 4 = ?",
-          "answer": 8,
+          "question": "What is 2 + 2 = ?",
+          "answer": 4,
           "strategyTag": "doubles",
-          "order": 2
+          "order": 2,
+          "difficulty": "easy"
         },
         {
           "id": "item-2-3",
-          "question": "5 + 5 = ?",
-          "answer": 10,
+          "question": "What is 3 + 3 = ?",
+          "answer": 6,
           "strategyTag": "doubles",
-          "order": 3
+          "order": 3,
+          "difficulty": "easy"
         },
         {
           "id": "item-2-4",
-          "question": "5 + 6 = ?",
-          "answer": 11,
-          "strategyTag": "near_double",
-          "order": 4
+          "question": "What is 4 + 4 = ?",
+          "answer": 8,
+          "strategyTag": "doubles",
+          "order": 4,
+          "difficulty": "easy"
         },
         {
           "id": "item-2-5",
-          "question": "6 + 7 = ?",
+          "question": "What is 5 + 5 = ?",
+          "answer": 10,
+          "strategyTag": "doubles",
+          "order": 5,
+          "difficulty": "easy"
+        },
+        {
+          "id": "item-2-6",
+          "question": "What is 6 + 6 = ?",
+          "answer": 12,
+          "strategyTag": "doubles",
+          "order": 6,
+          "difficulty": "easy"
+        },
+        {
+          "id": "item-2-7",
+          "question": "What is 7 + 7 = ?",
+          "answer": 14,
+          "strategyTag": "doubles",
+          "order": 7,
+          "difficulty": "easy"
+        },
+        {
+          "id": "item-2-8",
+          "question": "What is 8 + 8 = ?",
+          "answer": 16,
+          "strategyTag": "doubles",
+          "order": 8,
+          "difficulty": "easy"
+        },
+        {
+          "id": "item-2-9",
+          "question": "What is 9 + 9 = ?",
+          "answer": 18,
+          "strategyTag": "doubles",
+          "order": 9,
+          "difficulty": "easy"
+        },
+        {
+          "id": "item-2-10",
+          "question": "What is 10 + 10 = ?",
+          "answer": 20,
+          "strategyTag": "doubles",
+          "order": 10,
+          "difficulty": "easy"
+        },
+        {
+          "id": "item-2-11",
+          "question": "What is 5 + 4 = ?",
+          "answer": 9,
+          "strategyTag": "near_double",
+          "order": 11,
+          "difficulty": "medium",
+          "hint": "We know 5 + 5 = 10. But 4 is one LESS than 5. So start with 10, then subtract 1 to get 9."
+        },
+        {
+          "id": "item-2-12",
+          "question": "What is 5 + 6 = ?",
+          "answer": 11,
+          "strategyTag": "near_double",
+          "order": 12,
+          "difficulty": "medium",
+          "hint": "We know 5 + 5 = 10. But 6 is one MORE than 5. So start with 10, then add 1 to get 11."
+        },
+        {
+          "id": "item-2-13",
+          "question": "What is 6 + 7 = ?",
           "answer": 13,
           "strategyTag": "near_double",
-          "order": 5
+          "order": 13,
+          "difficulty": "medium",
+          "hint": "We know 6 + 6 = 12. But 7 is one MORE than 6. So start with 12, then add 1 to get 13."
+        },
+        {
+          "id": "item-2-14",
+          "question": "What is 7 + 8 = ?",
+          "answer": 15,
+          "strategyTag": "near_double",
+          "order": 14,
+          "difficulty": "medium",
+          "hint": "We know 7 + 7 = 14. But 8 is one MORE than 7. So start with 14, then add 1 to get 15."
+        },
+        {
+          "id": "item-2-15",
+          "question": "What is 8 + 6 = ?",
+          "answer": 14,
+          "strategyTag": "near_double",
+          "order": 15,
+          "difficulty": "medium",
+          "hint": "We know 8 + 8 = 16. But 6 is two LESS than 8. So start with 16, then subtract 2 to get 14."
         }
       ]
     },
