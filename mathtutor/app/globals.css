@@ -69,11 +69,11 @@ body {
   }
 
   .kid-button-primary {
-    @apply kid-button bg-kid-blue-500 hover:bg-kid-blue-700;
+    @apply rounded-full px-6 py-3 text-lg font-bold text-white transition-colors bg-kid-blue-500 hover:bg-kid-blue-700;
   }
 
   .kid-button-success {
-    @apply kid-button bg-kid-green-500 hover:bg-kid-green-600;
+    @apply rounded-full px-6 py-3 text-lg font-bold text-white transition-colors bg-kid-green-500 hover:bg-kid-green-600;
   }
 
   .kid-heading {
