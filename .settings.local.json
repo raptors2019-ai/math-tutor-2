@@ -1,0 +1,26 @@
+{
+  "permissions": {
+    "allow": [
+      "mcp__playwright",
+      "mcp__context7",
+      "mcp__browsermcp",
+      "mcp__jentic",
+      "mcp__desktop-commander",
+      "mcp__magic",
+      "Bash(tree:*)",
+      "WebFetch(domain:clerk.com)",
+      "WebSearch",
+      "Bash(npm install:*)",
+      "Bash(npm run dev:*)",
+      "Bash(lsof:*)",
+      "Bash(kill:*)",
+      "Bash(curl:*)",
+      "Bash(npx prisma migrate dev:*)",
+      "Bash(npx prisma migrate:*)",
+      "Bash(PRISMA_USER_CONSENT_FOR_DANGEROUS_AI_ACTION=\"yes, reset the database\" npx prisma migrate reset --force --skip-generate)",
+      "Bash(npx prisma generate:*)",
+      "Bash(npm run build:*)",
+      "Bash(cat:*)"
+    ]
+  }
+}
