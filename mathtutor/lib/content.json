@@ -332,24 +332,6 @@
           "hint": "These numbers are close! Use near-doubles: 5+5=10, then +1=11"
         },
         {
-          "id": "item-3-4",
-          "question": "For 7 + 8, should you use Doubles or Make-10?",
-          "answer": 15,
-          "strategyTag": "choose_doubles",
-          "order": 4,
-          "difficulty": "medium",
-          "hint": "Are 7 and 8 close together? YES! Use doubles: 7+7=14, plus 1=15"
-        },
-        {
-          "id": "item-3-5",
-          "question": "For 9 + 4, should you use Doubles or Make-10?",
-          "answer": 13,
-          "strategyTag": "choose_make10",
-          "order": 5,
-          "difficulty": "medium",
-          "hint": "Is one number close to 10? YES, 9 is! Use make-10: 9+1=10, then 10+3=13"
-        },
-        {
           "id": "item-3-6",
           "question": "What is 4 + 4 = ?",
           "answer": 8,
