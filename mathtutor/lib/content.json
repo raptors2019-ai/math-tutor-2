@@ -283,53 +283,161 @@
     {
       "id": "lesson-3",
       "order": 3,
-      "title": "Choosing Strategies",
-      "description": "Decide which strategy works best for each problem",
+      "title": "Choosing Strategies: Become a Math Detective! 🔍",
+      "description": "Learn when to use Make-10 and when to use Doubles. Become a strategy master by picking the fastest tool for each problem!",
       "strategyTag": "choosing-strategies",
+      "fullDescription": "Awesome job, math detectives! You've learned Make-10 and Doubles/Near-Doubles. Now it's time for the best part—learning WHEN to use each strategy! Imagine you have two tools: a hammer and a screwdriver. Both are great, but you need to pick the right one for each job! The same is true for math strategies. Sometimes Make-10 is faster, and sometimes Doubles is faster. Let's learn how to choose!",
       "subLessons": [
         {
           "id": "sub-3-1",
-          "title": "Which Strategy Fits?",
-          "description": "Decide whether to use Make-10 or Doubles",
+          "title": "Strategy Comparison ⚖️",
+          "description": "Look at the same problem solved BOTH ways, then decide which strategy is faster and when to use each one.",
           "order": 1,
-          "diagnosticPrompt": "The student can do the strategies but doesn't know when to use each one. Help them decide based on the numbers."
+          "diagnosticPrompt": "The student can execute both strategies but doesn't recognize which is faster for a given problem. Show them side-by-side comparisons: For 6+7, near-doubles is 2 steps (6+6=12, +1=13). For make-10, it's more complex (6+4=10, then 10+3=13). Help them see: Use Doubles when numbers are close. Use Make-10 when one number is 8 or 9."
+        },
+        {
+          "id": "sub-3-2",
+          "title": "Mixed Practice Drills 🏃‍♀️",
+          "description": "Practice choosing the BEST strategy for each problem. Think fast like a math ninja!",
+          "order": 2,
+          "diagnosticPrompt": "The student struggles to choose quickly. Remind them: Use Doubles when numbers are the same or very close (4+4, 5+6, 7+8). Use Make-10 when one number is 8 or 9 (9+3, 8+6). Let them solve each problem twice and decide which felt faster."
         }
       ],
       "items": [
         {
           "id": "item-3-1",
-          "question": "7 + 7 = ?",
-          "answer": 14,
+          "question": "What is 6 + 7 = ?",
+          "answer": 13,
           "strategyTag": "choose_doubles",
-          "order": 1
+          "order": 1,
+          "difficulty": "medium",
+          "hint": "Are these numbers close together? YES! Use near-doubles: 6+6=12, then +1=13"
         },
         {
           "id": "item-3-2",
-          "question": "8 + 4 = ?",
-          "answer": 12,
+          "question": "What is 8 + 5 = ?",
+          "answer": 13,
           "strategyTag": "choose_make10",
-          "order": 2
+          "order": 2,
+          "difficulty": "medium",
+          "hint": "Is one number close to 10? YES, 8 is! Use make-10: 8+2=10, then 10+3=13"
         },
         {
           "id": "item-3-3",
-          "question": "6 + 5 = ?",
+          "question": "What is 5 + 6 = ?",
           "answer": 11,
-          "strategyTag": "choose_either",
-          "order": 3
+          "strategyTag": "choose_doubles",
+          "order": 3,
+          "difficulty": "medium",
+          "hint": "These numbers are close! Use near-doubles: 5+5=10, then +1=11"
         },
         {
           "id": "item-3-4",
-          "question": "9 + 3 = ?",
-          "answer": 12,
-          "strategyTag": "choose_make10",
-          "order": 4
+          "question": "For 7 + 8, should you use Doubles or Make-10?",
+          "answer": 15,
+          "strategyTag": "choose_doubles",
+          "order": 4,
+          "difficulty": "medium",
+          "hint": "Are 7 and 8 close together? YES! Use doubles: 7+7=14, plus 1=15"
         },
         {
           "id": "item-3-5",
-          "question": "8 + 8 = ?",
-          "answer": 16,
+          "question": "For 9 + 4, should you use Doubles or Make-10?",
+          "answer": 13,
+          "strategyTag": "choose_make10",
+          "order": 5,
+          "difficulty": "medium",
+          "hint": "Is one number close to 10? YES, 9 is! Use make-10: 9+1=10, then 10+3=13"
+        },
+        {
+          "id": "item-3-6",
+          "question": "What is 4 + 4 = ?",
+          "answer": 8,
           "strategyTag": "choose_doubles",
-          "order": 5
+          "order": 6,
+          "difficulty": "easy",
+          "hint": "This IS a double! Use doubles strategy"
+        },
+        {
+          "id": "item-3-7",
+          "question": "What is 9 + 2 = ?",
+          "answer": 11,
+          "strategyTag": "choose_make10",
+          "order": 7,
+          "difficulty": "easy",
+          "hint": "9 is SO close to 10! Use make-10: 9+1=10, then 10+1=11"
+        },
+        {
+          "id": "item-3-8",
+          "question": "What is 7 + 8 = ?",
+          "answer": 15,
+          "strategyTag": "choose_doubles",
+          "order": 8,
+          "difficulty": "medium",
+          "hint": "7 and 8 are right next to each other! Use near-doubles: 7+7=14, plus 1=15"
+        },
+        {
+          "id": "item-3-9",
+          "question": "What is 8 + 6 = ?",
+          "answer": 14,
+          "strategyTag": "choose_make10",
+          "order": 9,
+          "difficulty": "medium",
+          "hint": "8 is close to 10! Use make-10: 8+2=10, then 10+4=14"
+        },
+        {
+          "id": "item-3-10",
+          "question": "What is 6 + 6 = ?",
+          "answer": 12,
+          "strategyTag": "choose_doubles",
+          "order": 10,
+          "difficulty": "easy",
+          "hint": "Perfect double! Use the doubles strategy"
+        },
+        {
+          "id": "item-3-11",
+          "question": "What is 5 + 5 = ?",
+          "answer": 10,
+          "strategyTag": "choose_doubles",
+          "order": 11,
+          "difficulty": "easy",
+          "hint": "This is a double!"
+        },
+        {
+          "id": "item-3-12",
+          "question": "What is 9 + 6 = ?",
+          "answer": 15,
+          "strategyTag": "choose_make10",
+          "order": 12,
+          "difficulty": "medium",
+          "hint": "Look at that 9! Use make-10: 9+1=10, then 10+5=15"
+        },
+        {
+          "id": "item-3-13",
+          "question": "What is 7 + 6 = ?",
+          "answer": 13,
+          "strategyTag": "choose_doubles",
+          "order": 13,
+          "difficulty": "medium",
+          "hint": "These numbers are neighbors! Use near-doubles: 7+7=14, minus 1=13"
+        },
+        {
+          "id": "item-3-14",
+          "question": "What is 8 + 4 = ?",
+          "answer": 12,
+          "strategyTag": "choose_make10",
+          "order": 14,
+          "difficulty": "medium",
+          "hint": "8 is your clue! Use make-10: 8+2=10, then 10+2=12"
+        },
+        {
+          "id": "item-3-15",
+          "question": "What is 3 + 4 = ?",
+          "answer": 7,
+          "strategyTag": "choose_either",
+          "order": 15,
+          "difficulty": "easy",
+          "hint": "These numbers are close! You could use near-doubles or just count"
         }
       ]
     }
