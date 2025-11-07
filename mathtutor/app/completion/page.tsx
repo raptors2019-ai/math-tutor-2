@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import Confetti from 'react-confetti';
 
 /**
  * Completion page - celebration screen after completing all 3 lessons.
@@ -47,11 +46,6 @@ export default function CompletionPage() {
 
   return (
     <div className="relative flex min-h-screen flex-col items-center justify-center overflow-hidden bg-gradient-to-br from-kid-pink-400 via-kid-purple-300 to-kid-blue-500 px-4 py-8">
-      {/* Confetti */}
-      {windowSize.width > 0 && (
-        <Confetti width={windowSize.width} height={windowSize.height} />
-      )}
-
       {/* Content */}
       <div className="relative z-10 flex flex-col items-center gap-8 text-center">
         {/* Trophy */}

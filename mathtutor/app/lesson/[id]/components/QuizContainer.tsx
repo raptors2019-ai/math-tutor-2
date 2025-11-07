@@ -24,6 +24,7 @@ import { QuestionDisplay } from "./QuestionDisplay";
 import { AnswerForm } from "./AnswerForm";
 import { FeedbackDisplay } from "./FeedbackDisplay";
 import { ResultsScreen } from "./ResultsScreen";
+import { handleAndShowError } from "@/lib/errorHandler";
 
 /**
  * Initial quiz state
@@ -113,6 +114,8 @@ export function QuizContainer({ lessonId }: QuizContainerProps) {
         error: errorMessage,
       }));
 
+      // Show toast error notification
+      handleAndShowError(err, errorMessage);
       console.error("[QuizContainer] Session init error:", err);
     }
   };
@@ -192,6 +195,8 @@ export function QuizContainer({ lessonId }: QuizContainerProps) {
         showFeedback: false,
       }));
 
+      // Show toast error notification
+      handleAndShowError(err, "Failed to submit answer — retrying is safe, try again!");
       console.error("[QuizContainer] Answer submit error:", err);
     }
   };
@@ -260,6 +265,8 @@ export function QuizContainer({ lessonId }: QuizContainerProps) {
         error: errorMessage,
       }));
 
+      // Show toast error notification
+      handleAndShowError(err, "Failed to complete quiz — please try again");
       console.error("[QuizContainer] Session complete error:", err);
     }
   };

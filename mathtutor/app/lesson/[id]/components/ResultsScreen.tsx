@@ -7,13 +7,16 @@
  * - Next lesson unlock button (if passed)
  * - Personalized feedback with guidance (if failed)
  * - Navigation options (retry, home)
+ * - Confetti animation on pass
  */
 
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import { useRouter } from "next/navigation";
+import { motion } from "framer-motion";
 import { ResultsScreenProps } from "../types";
+import { useSoundSettings } from "@/lib/audio/useSoundSettings";
 
 /**
  * ResultsScreen - Show quiz completion and results
@@ -52,6 +55,18 @@ export function ResultsScreen({
   onHome,
 }: ResultsScreenProps) {
   const router = useRouter();
+  const { playCelebration } = useSoundSettings();
+
+  // Play celebration sound and redirect if all lessons completed
+  useEffect(() => {
+    if (passed) {
+      // Play celebration sound on pass
+      const soundTimer = setTimeout(() => {
+        playCelebration();
+      }, 300);
+      return () => clearTimeout(soundTimer);
+    }
+  }, [passed, playCelebration]);
 
   // Redirect to completion page if all lessons completed
   useEffect(() => {
@@ -67,15 +82,59 @@ export function ResultsScreen({
     router.push(`/lesson-info/${lessonId}`);
   };
 
+  // Memoize confetti particles to avoid recomputing on every render
+   
+  const confettiParticles = useMemo(() => {
+    return passed
+      ? [...Array(15)].map((_, i) => ({
+          id: i,
+          rotate: 360 * Math.random(),
+          x: (Math.random() - 0.5) * 400,
+          duration: 2.5 + Math.random() * 0.5,
+          left: Math.random() * 100,
+        }))
+      : [];
+  }, [passed]);
+
   return (
     <div
-      className={`min-h-screen w-full flex items-center justify-center px-4 py-8 ${
+      className={`relative min-h-screen w-full flex items-center justify-center px-4 py-8 ${
         passed
           ? "bg-gradient-to-br from-kid-green-100 via-kid-blue-50 to-kid-purple-100"
           : "bg-gradient-to-br from-kid-yellow-100 via-kid-blue-50 to-kid-pink-100"
       }`}
     >
-      <div className="w-full max-w-2xl space-y-6">
+      {/* Confetti Animation on Pass */}
+      {passed && (
+        <div className="absolute inset-0 pointer-events-none overflow-hidden">
+          {confettiParticles.map((particle) => (
+            <motion.div
+              key={`confetti-${particle.id}`}
+              initial={{ y: -100, opacity: 1, rotate: 0, x: 0 }}
+              animate={{
+                y: window.innerHeight + 100,
+                opacity: 0,
+                rotate: particle.rotate,
+                x: particle.x,
+              }}
+              transition={{
+                duration: particle.duration,
+                delay: particle.id * 0.1,
+                ease: "easeIn",
+              }}
+              className="absolute text-4xl"
+              style={{
+                left: `${particle.left}%`,
+                top: "-50px",
+              }}
+            >
+              {["🎉", "🎊", "✨", "⭐", "🌟"][particle.id % 5]}
+            </motion.div>
+          ))}
+        </div>
+      )}
+
+      <div className="w-full max-w-2xl space-y-6 relative z-10">
         {/* Header */}
         <div className="text-center">
           <div className="text-7xl mb-4">
