@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { motion } from 'framer-motion';
 import { LessonCard } from '@/components/LessonCard';
 
 interface LessonProgress {
@@ -56,54 +57,180 @@ export default function DashboardPage() {
 
   if (loading) {
     return (
-      <div className="flex min-h-screen items-center justify-center">
-        <div className="text-center">
-          <div className="mb-4 text-6xl">📚</div>
-          <p className="text-2xl font-bold">Loading your lessons...</p>
-        </div>
+      <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-kid-blue-50 to-kid-purple-50">
+        <motion.div
+          animate={{ scale: [1, 1.15, 1], rotate: [0, 5, 0] }}
+          transition={{ duration: 2, repeat: Infinity }}
+          className="text-center"
+        >
+          <div className="mb-4 text-7xl">📚</div>
+          <p className="text-2xl font-bold text-kid-blue-700">Loading your lessons...</p>
+        </motion.div>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="flex min-h-screen items-center justify-center">
-        <div className="text-center">
+      <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-kid-blue-50 to-kid-purple-50">
+        <motion.div
+          initial={{ scale: 0.8, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          className="text-center rounded-3xl bg-white p-8 shadow-lg"
+        >
           <div className="mb-4 text-6xl">😕</div>
-          <p className="text-2xl font-bold mb-4">{error}</p>
-          <button
+          <p className="text-2xl font-bold mb-6 text-gray-700">{error}</p>
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
             onClick={() => window.location.reload()}
-            className="kid-button-primary"
+            className="kid-button-primary px-8 py-4 text-xl"
           >
             Try Again
-          </button>
-        </div>
+          </motion.button>
+        </motion.div>
       </div>
     );
   }
 
-  return (
-    <div>
-      <h2 className="kid-heading mb-8">Your Lessons</h2>
+  // Calculate overall progress
+  const completedCount = lessons.filter(l => l.completed).length;
+  const totalCount = lessons.length;
+  const progressPercentage = totalCount > 0 ? Math.round((completedCount / totalCount) * 100) : 0;
 
-      <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-        {lessons.map((lesson) => (
-          <LessonCard
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1,
+        delayChildren: 0.2,
+      },
+    },
+  };
+
+  const cardVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: { duration: 0.5 },
+    },
+  };
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-kid-blue-50 via-kid-purple-50 to-kid-pink-50 pb-12">
+      {/* Header section */}
+      <motion.div
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6 }}
+        className="mb-12"
+      >
+        <h1 className="kid-heading mb-4 text-5xl md:text-6xl">
+          Your Learning Journey 🚀
+        </h1>
+        <p className="text-xl text-gray-700 mb-6">
+          Master each strategy and unlock the next lesson!
+        </p>
+
+        {/* Progress bar */}
+        <div className="max-w-md">
+          <div className="flex justify-between items-center mb-2">
+            <span className="text-sm font-bold text-gray-700">Overall Progress</span>
+            <span className="text-sm font-bold text-kid-blue-700">{progressPercentage}%</span>
+          </div>
+          <div className="relative h-4 bg-gray-200 rounded-full overflow-hidden border-2 border-kid-blue-300">
+            <motion.div
+              initial={{ width: 0 }}
+              animate={{ width: `${progressPercentage}%` }}
+              transition={{ duration: 1, delay: 0.3 }}
+              className="h-full bg-gradient-to-r from-kid-green-400 to-kid-blue-500 rounded-full"
+            />
+          </div>
+        </div>
+      </motion.div>
+
+      {/* Lessons grid */}
+      <motion.div
+        className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3"
+        variants={containerVariants}
+        initial="hidden"
+        animate="visible"
+      >
+        {lessons.map((lesson, index) => (
+          <motion.div
             key={lesson.lessonId}
-            id={lesson.lessonId}
-            title={lesson.lessonTitle}
-            description={
-              lesson.locked
-                ? 'Complete the previous lesson first!'
-                : lesson.completed
-                  ? `Mastery: ${Math.round(lesson.masteryScore)}%`
-                  : 'Ready to start?'
-            }
-            completed={lesson.completed}
-            locked={lesson.locked}
-          />
+            variants={cardVariants}
+            whileHover={{ y: -8 }}
+            className="relative group"
+          >
+            {/* Lesson number badge */}
+            <div className="absolute -top-4 -left-4 z-20">
+              <motion.div
+                whileHover={{ scale: 1.1 }}
+                className="w-12 h-12 rounded-full bg-gradient-to-br from-kid-purple-500 to-kid-pink-500 flex items-center justify-center text-white font-bold text-lg shadow-lg"
+              >
+                {index + 1}
+              </motion.div>
+            </div>
+
+            <LessonCard
+              id={lesson.lessonId}
+              title={lesson.lessonTitle}
+              description={
+                lesson.locked
+                  ? 'Complete the previous lesson first!'
+                  : lesson.completed
+                    ? `Mastery: ${Math.round(lesson.masteryScore)}%`
+                    : 'Ready to start?'
+              }
+              completed={lesson.completed}
+              locked={lesson.locked}
+            />
+
+            {/* Status indicator */}
+            {lesson.completed && (
+              <motion.div
+                initial={{ scale: 0, rotate: -180 }}
+                animate={{ scale: 1, rotate: 0 }}
+                transition={{ type: 'spring', stiffness: 100 }}
+                className="absolute top-4 right-4 text-3xl drop-shadow-lg"
+              >
+                ✅
+              </motion.div>
+            )}
+
+            {lesson.locked && (
+              <motion.div
+                animate={{ y: [0, 5, 0] }}
+                transition={{ duration: 2, repeat: Infinity }}
+                className="absolute top-4 right-4 text-3xl"
+              >
+                🔒
+              </motion.div>
+            )}
+          </motion.div>
         ))}
-      </div>
+      </motion.div>
+
+      {/* Encouragement message */}
+      {completedCount === totalCount && (
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.5 }}
+          className="mt-12 rounded-3xl bg-gradient-to-r from-kid-green-100 to-kid-blue-100 p-8 text-center border-2 border-kid-green-300"
+        >
+          <div className="text-5xl mb-4">🎉</div>
+          <h2 className="text-3xl font-bold text-kid-green-800 mb-2">
+            Congratulations!
+          </h2>
+          <p className="text-lg text-kid-green-700">
+            You've completed all lessons! Check out your completion page for your achievements! 🏆
+          </p>
+        </motion.div>
+      )}
     </div>
   );
 }
