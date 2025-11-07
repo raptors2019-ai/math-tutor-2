@@ -43,7 +43,7 @@ export function LessonCard({
 
       {!locked && (
         <Link
-          href={`/lesson/${id}`}
+          href={`/lesson-info/${id}`}
           className="inline-block kid-button-primary"
         >
           Start Lesson
