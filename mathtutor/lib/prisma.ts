@@ -15,8 +15,8 @@ const prismaClient =
 
 // Helper function for retries (use this in API routes before queries)
 export async function connectWithRetry() {
-  const maxRetries = 3;
-  const retryDelay = 1000; // 1 second
+  const maxRetries = 5;
+  const retryDelay = 2000; // 1 second
 
   for (let attempt = 1; attempt <= maxRetries; attempt++) {
     try {
