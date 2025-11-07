@@ -220,10 +220,10 @@ export default function DashboardPage() {
           className="mt-12 rounded-3xl bg-gradient-to-r from-kid-green-100 to-kid-blue-100 p-8 text-center border-2 border-kid-green-300"
         >
           <div className="text-5xl mb-4">🎉</div>
-          <h2 className="text-3xl font-bold text-kid-green-800 mb-2">
+          <h2 className="text-3xl font-bold text-gray-900 mb-2">
             Congratulations!
           </h2>
-          <p className="text-lg text-kid-green-700">
+          <p className="text-lg text-gray-800 font-semibold">
             You've completed all lessons! Check out your completion page for your achievements! 🏆
           </p>
         </motion.div>

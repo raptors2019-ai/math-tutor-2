@@ -3,29 +3,11 @@
 import Link from "next/link";
 import { SignUpButton } from "@clerk/nextjs";
 import { motion } from "framer-motion";
-import { useEffect, useState } from "react";
+import { useAuth, useUser } from "@clerk/nextjs";
 
 export default function HomePage() {
-  const [user, setUser] = useState<any>(null);
-  const [isLoaded, setIsLoaded] = useState(false);
-
-  useEffect(() => {
-    const loadUser = async () => {
-      try {
-        const response = await fetch("/api/auth/user");
-        if (response.ok) {
-          const userData = await response.json();
-          setUser(userData);
-        }
-      } catch {
-        // User not logged in
-      } finally {
-        setIsLoaded(true);
-      }
-    };
-
-    loadUser();
-  }, []);
+  const { isSignedIn, isLoaded } = useAuth();
+  const { user } = useUser();
 
   if (!isLoaded) {
     return (
@@ -41,7 +23,7 @@ export default function HomePage() {
     );
   }
 
-  if (user) {
+  if (isSignedIn) {
     return (
       <div className="relative min-h-screen overflow-hidden bg-gradient-to-br from-kid-blue-50 via-kid-purple-50 to-kid-pink-50 px-4">
         {/* Decorative animated elements */}
@@ -72,9 +54,11 @@ export default function HomePage() {
             <h1 className="mb-2 text-5xl md:text-6xl font-black text-gradient bg-gradient-to-r from-kid-blue-700 to-kid-purple-700 bg-clip-text text-transparent">
               Welcome back!
             </h1>
-            <p className="mb-2 text-2xl font-bold text-kid-blue-700">
-              {user.firstName}
-            </p>
+            {user && (
+              <p className="mb-2 text-2xl font-bold text-kid-blue-700">
+                {user.firstName || user.emailAddresses?.[0]?.emailAddress}
+              </p>
+            )}
             <p className="mb-8 text-xl text-gray-700">
               Ready for your next challenge? 🚀
             </p>
