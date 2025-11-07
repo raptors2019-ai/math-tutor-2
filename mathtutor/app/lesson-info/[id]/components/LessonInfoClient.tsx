@@ -162,7 +162,7 @@ export function LessonInfoClient({ lesson, id }: LessonInfoClientProps) {
             </p>
             <Link
               href={`/lesson/${id}`}
-              className="inline-block kid-button-success bg-white text-kid-blue-600 hover:bg-gray-100 text-2xl px-10 py-5 rounded-2xl font-bold shadow-lg transition-all"
+              className="inline-block bg-yellow-300 hover:bg-yellow-400 text-black text-2xl px-12 py-5 rounded-2xl font-black shadow-xl transition-all"
             >
               Take the Quiz! 🚀
             </Link>
