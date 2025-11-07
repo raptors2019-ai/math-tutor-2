@@ -2,9 +2,13 @@ import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
 import { z } from "zod";
 import { prisma } from "@/lib/prisma";
-import { completeSession, getResponses, getSessionStats } from "@/lib/sessionManager";
+import {
+  completeSession,
+  getResponses,
+  getSessionStats,
+} from "@/lib/sessionManager";
 import { generateSummaryFeedback } from "@/lib/scoring/generateSummaryFeedback";
-
+import { connectWithRetry } from "@/lib/prisma";
 /**
  * POST /api/session/complete
  *
@@ -23,6 +27,8 @@ const MASTERY_THRESHOLD = 90;
 
 export async function POST(req: NextRequest) {
   try {
+    await connectWithRetry();
+
     const { userId } = await auth();
     if (!userId) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -82,7 +88,7 @@ export async function POST(req: NextRequest) {
 
       if (responses.length > 0) {
         totalCount = responses.length;
-        correctCount = responses.filter(r => r.isCorrect).length;
+        correctCount = responses.filter((r) => r.isCorrect).length;
         masteryScore = (correctCount / totalCount) * 100;
       }
     }
@@ -100,10 +106,7 @@ export async function POST(req: NextRequest) {
     });
 
     if (!user) {
-      return NextResponse.json(
-        { error: "User not found" },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: "User not found" }, { status: 404 });
     }
 
     const passed = masteryScore >= MASTERY_THRESHOLD;
@@ -214,5 +217,7 @@ export async function POST(req: NextRequest) {
       { error: "Internal server error" },
       { status: 500 }
     );
+  } finally {
+    await prisma.$disconnect().catch(() => {}); // Add this
   }
 }

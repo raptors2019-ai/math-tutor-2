@@ -4,7 +4,7 @@ const globalForPrisma = globalThis as unknown as {
   prisma: PrismaClient | undefined;
 };
 
-export const prisma =
+const prismaClient =
   globalForPrisma.prisma ??
   new PrismaClient({
     log:
@@ -12,6 +12,29 @@ export const prisma =
         ? ["query", "error", "warn"]
         : ["error"],
   });
+
+// Helper function for retries (use this in API routes before queries)
+export async function connectWithRetry() {
+  const maxRetries = 3;
+  const retryDelay = 1000; // 1 second
+
+  for (let attempt = 1; attempt <= maxRetries; attempt++) {
+    try {
+      await prismaClient.$connect();
+      console.log(`Prisma connected successfully on attempt ${attempt}`);
+      return; // Success!
+    } catch (error) {
+      console.error(`Prisma connection attempt ${attempt} failed:`, error);
+      if (attempt === maxRetries) {
+        throw error; // Rethrow after last retry
+      }
+      await new Promise((resolve) => setTimeout(resolve, retryDelay));
+    }
+  }
+  throw new Error("Failed to connect after retries");
+}
+
+export const prisma = prismaClient;
 
 if (process.env.NODE_ENV !== "production") {
   globalForPrisma.prisma = prisma;

@@ -4,6 +4,7 @@ import { z } from "zod";
 import { prisma } from "@/lib/prisma";
 import { createSession } from "@/lib/sessionManager";
 import { randomUUID } from "crypto";
+import { connectWithRetry } from "@/lib/prisma";
 
 /**
  * POST /api/session/start
@@ -17,6 +18,7 @@ const startSessionSchema = z.object({
 
 export async function POST(req: NextRequest) {
   try {
+    await connectWithRetry();
     const { userId } = await auth();
     if (!userId) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -66,7 +68,9 @@ export async function POST(req: NextRequest) {
 
       // Check if previous lesson is completed
       const previousProgress = await prisma.userProgress.findUnique({
-        where: { userId_lessonId: { userId: user.id, lessonId: previousLesson.id } },
+        where: {
+          userId_lessonId: { userId: user.id, lessonId: previousLesson.id },
+        },
       });
 
       if (!previousProgress || !previousProgress.completed) {
@@ -132,5 +136,7 @@ export async function POST(req: NextRequest) {
       { error: "Internal server error" },
       { status: 500 }
     );
+  } finally {
+    await prisma.$disconnect().catch(() => {}); // Add this
   }
 }

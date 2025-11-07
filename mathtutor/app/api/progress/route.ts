@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
 import { prisma } from "@/lib/prisma";
+import { connectWithRetry } from "@/lib/prisma";
 
 /**
  * GET /api/progress
@@ -10,6 +11,8 @@ import { prisma } from "@/lib/prisma";
 
 export async function GET() {
   try {
+    await connectWithRetry();
+
     const { userId } = await auth();
     if (!userId) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -34,9 +37,7 @@ export async function GET() {
       where: { userId: user.id },
     });
 
-    const progressMap = new Map(
-      progressRecords.map((p) => [p.lessonId, p])
-    );
+    const progressMap = new Map(progressRecords.map((p) => [p.lessonId, p]));
 
     // Build progress response
     const progress = lessons.map((lesson) => {
@@ -71,6 +72,8 @@ export async function GET() {
       { error: "Internal server error" },
       { status: 500 }
     );
+  } finally {
+    await prisma.$disconnect().catch(() => {}); // Add this for cleanup
   }
 }
 
@@ -90,6 +93,8 @@ const updateProgressSchema = z.object({
 
 export async function POST(req: NextRequest) {
   try {
+    await connectWithRetry();
+
     const { userId } = await auth();
     if (!userId) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -160,5 +165,7 @@ export async function POST(req: NextRequest) {
       { error: "Internal server error" },
       { status: 500 }
     );
+  } finally {
+    await prisma.$disconnect().catch(() => {}); // Add this for cleanup
   }
 }

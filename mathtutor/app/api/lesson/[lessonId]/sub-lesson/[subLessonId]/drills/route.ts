@@ -1,6 +1,6 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { prisma } from '@/lib/prisma';
-
+import { NextRequest, NextResponse } from "next/server";
+import { prisma } from "@/lib/prisma";
+import { connectWithRetry } from "@/lib/prisma";
 /**
  * GET /api/lesson/[lessonId]/sub-lesson/[subLessonId]/drills
  *
@@ -10,11 +10,11 @@ import { prisma } from '@/lib/prisma';
 
 // Map sub-lesson IDs to strategy tags for fetching related items
 const subLessonStrategyMap: Record<string, string[]> = {
-  'sub-1-1': ['make-10', 'complement'],
-  'sub-1-2': ['make-10', 'make-10-splitting'],
-  'sub-2-1': ['doubles'],
-  'sub-2-2': ['near_double'],
-  'sub-3-1': ['choose_doubles', 'choose_make10', 'choose_either'],
+  "sub-1-1": ["make-10", "complement"],
+  "sub-1-2": ["make-10", "make-10-splitting"],
+  "sub-2-1": ["doubles"],
+  "sub-2-2": ["near_double"],
+  "sub-3-1": ["choose_doubles", "choose_make10", "choose_either"],
 };
 
 export async function GET(
@@ -26,6 +26,8 @@ export async function GET(
   }
 ) {
   try {
+    await connectWithRetry();
+
     const { lessonId, subLessonId } = await params;
 
     // Verify sub-lesson exists
@@ -36,7 +38,7 @@ export async function GET(
 
     if (!subLesson) {
       return NextResponse.json(
-        { error: 'Sub-lesson not found' },
+        { error: "Sub-lesson not found" },
         { status: 404 }
       );
     }
@@ -44,15 +46,15 @@ export async function GET(
     // Verify it belongs to the requested lesson
     if (subLesson.lessonId !== lessonId) {
       return NextResponse.json(
-        { error: 'Sub-lesson does not belong to this lesson' },
+        { error: "Sub-lesson does not belong to this lesson" },
         { status: 400 }
       );
     }
 
     // Get strategy tags for this sub-lesson
-    const strategyTags =
-      subLessonStrategyMap[subLessonId] ||
-      [subLesson.lesson.strategyTag];
+    const strategyTags = subLessonStrategyMap[subLessonId] || [
+      subLesson.lesson.strategyTag,
+    ];
 
     // Fetch 3-5 items from this lesson with matching strategy tags
     const items = await prisma.lessonItem.findMany({
@@ -60,13 +62,13 @@ export async function GET(
         lessonId,
         strategyTag: { in: strategyTags },
       },
-      orderBy: { order: 'asc' },
+      orderBy: { order: "asc" },
       take: 5,
     });
 
     if (items.length === 0) {
       return NextResponse.json(
-        { error: 'No drill items found for this sub-lesson' },
+        { error: "No drill items found for this sub-lesson" },
         { status: 404 }
       );
     }
@@ -83,10 +85,12 @@ export async function GET(
       { status: 200 }
     );
   } catch (error) {
-    console.error('[GET /api/lesson/.../drills]:', error);
+    console.error("[GET /api/lesson/.../drills]:", error);
     return NextResponse.json(
-      { error: 'Internal server error' },
+      { error: "Internal server error" },
       { status: 500 }
     );
+  } finally {
+    await prisma.$disconnect().catch(() => {}); // Add this for cleanup
   }
 }
