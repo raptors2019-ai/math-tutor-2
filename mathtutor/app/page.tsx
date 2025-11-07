@@ -1,7 +1,7 @@
 'use client';
 
 import Link from "next/link";
-import { SignInButton, SignUpButton } from "@clerk/nextjs";
+import { SignUpButton } from "@clerk/nextjs";
 import { motion } from "framer-motion";
 import { useEffect, useState } from "react";
 
@@ -194,32 +194,21 @@ export default function HomePage() {
             ))}
           </motion.div>
 
-          {/* Auth buttons */}
+          {/* Get Started Button */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.9, duration: 0.6 }}
-            className="flex flex-col gap-4 sm:flex-row sm:justify-center items-center"
           >
             <SignUpButton fallbackRedirectUrl="/dashboard" mode="modal">
               <motion.button
-                whileHover={{ scale: 1.05 }}
+                whileHover={{ scale: 1.08 }}
                 whileTap={{ scale: 0.95 }}
-                className="w-full sm:w-auto rounded-full bg-gradient-to-r from-kid-purple-500 to-kid-pink-500 px-10 py-4 text-2xl font-bold text-white shadow-lg hover:shadow-xl transition-shadow"
+                className="rounded-full bg-gradient-to-r from-kid-purple-500 to-kid-pink-500 px-12 py-5 text-3xl font-black text-white shadow-2xl hover:shadow-2xl transition-all"
               >
                 Get Started Now 🚀
               </motion.button>
             </SignUpButton>
-
-            <SignInButton fallbackRedirectUrl="/dashboard" mode="modal">
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className="w-full sm:w-auto rounded-full bg-white px-10 py-4 text-2xl font-bold text-kid-blue-600 border-3 border-kid-blue-500 shadow-lg hover:shadow-xl transition-shadow hover:bg-kid-blue-50"
-              >
-                Sign In 📖
-              </motion.button>
-            </SignInButton>
           </motion.div>
 
           {/* Bottom tagline */}
