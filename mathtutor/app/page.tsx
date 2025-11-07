@@ -68,7 +68,7 @@ export default function HomePage() {
               whileHover={{ scale: 1.05 }}
               className="mb-12 rounded-3xl bg-gradient-to-r from-kid-green-100 to-kid-blue-100 p-6 border-2 border-kid-green-300"
             >
-              <p className="text-lg font-bold text-kid-green-800">
+              <p className="text-lg font-black text-gray-900">
                 Keep up that amazing learning streak! 🎯
               </p>
             </motion.div>
