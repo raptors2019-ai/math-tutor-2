@@ -28,13 +28,27 @@ export default function DashboardPage() {
     const fetchProgress = async () => {
       try {
         const res = await fetch("/api/progress");
+
         if (!res.ok) {
-          setError("Failed to load progress");
+          const errorData = await res.text();
+          console.error(
+            `[Dashboard] API error ${res.status}:`,
+            errorData
+          );
+          setError(`Failed to load progress (${res.status})`);
           setLoading(false);
           return;
         }
 
         const data = await res.json();
+
+        if (!data.progress || !Array.isArray(data.progress)) {
+          console.error("[Dashboard] Invalid progress data:", data);
+          setError("Invalid progress data from server");
+          setLoading(false);
+          return;
+        }
+
         const progress: LessonProgress[] = data.progress;
 
         // Determine locked states:
@@ -50,7 +64,11 @@ export default function DashboardPage() {
         setLoading(false);
       } catch (err) {
         console.error("[Dashboard] Error fetching progress:", err);
-        setError("Failed to load your progress");
+        setError(
+          err instanceof Error
+            ? `Failed to load progress: ${err.message}`
+            : "Failed to load your progress"
+        );
         setLoading(false);
       }
     };
