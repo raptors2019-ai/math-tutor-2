@@ -1,95 +1,111 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
 generator client {
   provider = "prisma-client-js"
 }
 
 datasource db {
-  provider  = "postgresql"
-  url       = env("DATABASE_URL")
-  directUrl = env("DIRECT_URL")
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
 
+// User - Linked to Clerk
 model User {
-  id        String         @id @default(cuid())
-  clerkId   String         @unique
-  email     String         @unique
+  id        String   @id @default(cuid())
+  clerkId   String   @unique
+  email     String   @unique
   firstName String?
   lastName  String?
-  createdAt DateTime       @default(now())
-  updatedAt DateTime       @updatedAt
-  sessions  Session[]
-  progress  UserProgress[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  progress UserProgress[]
+  sessions Session[]
 }
 
+// Lesson - Curriculum unit (3 total)
 model Lesson {
-  id          String         @id @default(cuid())
-  order       Int            @unique
+  id          String   @id @default(cuid())
+  order       Int      @unique
   title       String
   description String
-  strategyTag String
-  createdAt   DateTime       @default(now())
-  items       LessonItem[]
-  subLessons  SubLesson[]
-  progress    UserProgress[]
+  strategyTag String // "make-10", "doubles", "choosing-strategies"
+  createdAt   DateTime @default(now())
+
+  subLessons SubLesson[]
+  items      LessonItem[]
+  progress   UserProgress[]
 }
 
+// SubLesson - Targeted remediation topic
 model SubLesson {
-  id               String @id @default(cuid())
+  id               String   @id @default(cuid())
   lessonId         String
   title            String
   description      String
   order            Int
   diagnosticPrompt String
-  lesson           Lesson @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+
+  lesson Lesson @relation(fields: [lessonId], references: [id], onDelete: Cascade)
 
   @@unique([lessonId, order])
 }
 
+// LessonItem - Individual question
 model LessonItem {
-  id          String            @id @default(cuid())
+  id          String @id @default(cuid())
   lessonId    String
-  question    String
+  question    String // e.g., "8 + 5 = ?"
   answer      Int
-  strategyTag String
+  strategyTag String // Tag for AI feedback routing
   order       Int
-  lesson      Lesson            @relation(fields: [lessonId], references: [id], onDelete: Cascade)
-  responses   SessionResponse[]
+
+  lesson    Lesson             @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  responses SessionResponse[]
 
   @@unique([lessonId, order])
 }
 
+// UserProgress - Track mastery per lesson
 model UserProgress {
-  id           String    @id @default(cuid())
+  id           String   @id @default(cuid())
   userId       String
   lessonId     String
-  masteryScore Float     @default(0)
-  completed    Boolean   @default(false)
+  masteryScore Float    @default(0)
+  completed    Boolean  @default(false)
   lastAttempt  DateTime?
-  createdAt    DateTime  @default(now())
-  updatedAt    DateTime  @updatedAt
-  lesson       Lesson    @relation(fields: [lessonId], references: [id], onDelete: Cascade)
-  user         User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
+  lesson Lesson @relation(fields: [lessonId], references: [id], onDelete: Cascade)
 
   @@unique([userId, lessonId])
 }
 
+// Session - Quiz attempt
 model Session {
-  id        String            @id @default(cuid())
+  id        String   @id @default(cuid())
   userId    String
   lessonId  String
-  startedAt DateTime          @default(now())
+  startedAt DateTime @default(now())
   score     Float?
-  passed    Boolean           @default(false)
-  user      User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  passed    Boolean  @default(false)
+
+  user      User               @relation(fields: [userId], references: [id], onDelete: Cascade)
   responses SessionResponse[]
 }
 
+// SessionResponse - Single question response
 model SessionResponse {
-  id        String     @id @default(cuid())
+  id        String   @id @default(cuid())
   sessionId String
   itemId    String
   answer    Int
   isCorrect Boolean
-  timeMs    Int
-  item      LessonItem @relation(fields: [itemId], references: [id], onDelete: Cascade)
-  session   Session    @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  timeMs    Int // Response time
+
+  session Session     @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  item    LessonItem @relation(fields: [itemId], references: [id], onDelete: Cascade)
 }
