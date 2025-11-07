@@ -120,13 +120,10 @@ export default function DashboardPage() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-kid-blue-50 via-kid-purple-50 to-kid-pink-50 pb-12">
+      <div className="container mx-auto px-4">
       {/* Header section */}
-      <motion.div
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6 }}
-        className="mb-12"
-      >
+      <div className="mb-12 text-center">
+
         <h1 className="kid-heading mb-4 text-5xl md:text-6xl">
           Your Learning Journey 🚀
         </h1>
@@ -135,7 +132,7 @@ export default function DashboardPage() {
         </p>
 
         {/* Progress bar */}
-        <div className="max-w-md">
+        <div className="mx-auto max-w-md">
           <div className="flex justify-between items-center mb-2">
             <span className="text-sm font-bold text-gray-700">Overall Progress</span>
             <span className="text-sm font-bold text-kid-blue-700">{progressPercentage}%</span>
@@ -149,7 +146,7 @@ export default function DashboardPage() {
             />
           </div>
         </div>
-      </motion.div>
+      </div>
 
       {/* Lessons grid */}
       <motion.div
@@ -231,6 +228,7 @@ export default function DashboardPage() {
           </p>
         </motion.div>
       )}
+      </div>
     </div>
   );
 }
