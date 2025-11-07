@@ -1,6 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
-import { connectWithRetry } from "@/lib/prisma";
+import { prisma, disconnectPrisma } from "@/lib/prisma";
 /**
  * GET /api/lesson/[lessonId]/sub-lesson/[subLessonId]/drills
  *
@@ -26,8 +25,6 @@ export async function GET(
   }
 ) {
   try {
-    await connectWithRetry();
-
     const { lessonId, subLessonId } = await params;
 
     // Verify sub-lesson exists
@@ -91,6 +88,6 @@ export async function GET(
       { status: 500 }
     );
   } finally {
-    await prisma.$disconnect().catch(() => {}); // Add this for cleanup
+    await disconnectPrisma();
   }
 }

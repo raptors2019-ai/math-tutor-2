@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
 import { z } from "zod";
-import { prisma } from "@/lib/prisma";
+import { prisma, disconnectPrisma } from "@/lib/prisma";
 import {
   getSession,
   addResponse,
@@ -9,7 +9,6 @@ import {
 } from "@/lib/sessionManager";
 import { tagErrors } from "@/lib/scoring/tagErrors";
 import { generateFeedback } from "@/lib/scoring/generateFeedback";
-import { connectWithRetry } from "@/lib/prisma";
 /**
  * POST /api/session/answer
  *
@@ -25,8 +24,6 @@ const answerSchema = z.object({
 
 export async function POST(req: NextRequest) {
   try {
-    await connectWithRetry();
-
     const { userId } = await auth();
     if (!userId) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -126,6 +123,6 @@ export async function POST(req: NextRequest) {
       { status: 500 }
     );
   } finally {
-    await prisma.$disconnect().catch(() => {}); // Add this for cleanup
+    await disconnectPrisma();
   }
 }

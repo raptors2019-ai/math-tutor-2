@@ -1,10 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
 import { z } from "zod";
-import { prisma } from "@/lib/prisma";
+import { prisma, disconnectPrisma } from "@/lib/prisma";
 import { createSession } from "@/lib/sessionManager";
 import { randomUUID } from "crypto";
-import { connectWithRetry } from "@/lib/prisma";
 
 /**
  * POST /api/session/start
@@ -18,7 +17,6 @@ const startSessionSchema = z.object({
 
 export async function POST(req: NextRequest) {
   try {
-    await connectWithRetry();
     const { userId } = await auth();
     if (!userId) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -137,6 +135,6 @@ export async function POST(req: NextRequest) {
       { status: 500 }
     );
   } finally {
-    await prisma.$disconnect().catch(() => {}); // Add this
+    await disconnectPrisma();
   }
 }

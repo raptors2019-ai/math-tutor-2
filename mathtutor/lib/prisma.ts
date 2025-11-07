@@ -36,6 +36,17 @@ export async function connectWithRetry() {
 
 export const prisma = prismaClient;
 
+/**
+ * Disconnect Prisma client only in production environments.
+ * In development, connections are reused for performance.
+ * In production (Vercel/Netlify), connections are properly cleaned up.
+ */
+export async function disconnectPrisma() {
+  if (process.env.NODE_ENV === "production") {
+    await prisma.$disconnect().catch(() => {});
+  }
+}
+
 if (process.env.NODE_ENV !== "production") {
   globalForPrisma.prisma = prisma;
 }

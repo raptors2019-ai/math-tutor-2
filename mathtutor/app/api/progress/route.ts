@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
-import { prisma } from "@/lib/prisma";
-import { connectWithRetry } from "@/lib/prisma";
+import { z } from "zod";
+import { prisma, disconnectPrisma } from "@/lib/prisma";
 
 /**
  * GET /api/progress
@@ -11,8 +11,6 @@ import { connectWithRetry } from "@/lib/prisma";
 
 export async function GET() {
   try {
-    await connectWithRetry();
-
     const { userId } = await auth();
     if (!userId) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -73,7 +71,7 @@ export async function GET() {
       { status: 500 }
     );
   } finally {
-    await prisma.$disconnect().catch(() => {}); // Add this for cleanup
+    await disconnectPrisma();
   }
 }
 
@@ -83,8 +81,6 @@ export async function GET() {
  * Update user progress (admin/debug endpoint)
  */
 
-import { z } from "zod";
-
 const updateProgressSchema = z.object({
   lessonId: z.string().min(1),
   masteryScore: z.number().min(0).max(100),
@@ -93,8 +89,6 @@ const updateProgressSchema = z.object({
 
 export async function POST(req: NextRequest) {
   try {
-    await connectWithRetry();
-
     const { userId } = await auth();
     if (!userId) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -166,6 +160,6 @@ export async function POST(req: NextRequest) {
       { status: 500 }
     );
   } finally {
-    await prisma.$disconnect().catch(() => {}); // Add this for cleanup
+    await disconnectPrisma();
   }
 }

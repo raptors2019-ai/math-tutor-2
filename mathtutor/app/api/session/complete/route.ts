@@ -1,14 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
 import { z } from "zod";
-import { prisma } from "@/lib/prisma";
+import { prisma, disconnectPrisma } from "@/lib/prisma";
 import {
   completeSession,
   getResponses,
   getSessionStats,
 } from "@/lib/sessionManager";
 import { generateSummaryFeedback } from "@/lib/scoring/generateSummaryFeedback";
-import { connectWithRetry } from "@/lib/prisma";
 /**
  * POST /api/session/complete
  *
@@ -27,8 +26,6 @@ const MASTERY_THRESHOLD = 90;
 
 export async function POST(req: NextRequest) {
   try {
-    await connectWithRetry();
-
     const { userId } = await auth();
     if (!userId) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -180,7 +177,8 @@ export async function POST(req: NextRequest) {
     if (!passed) {
       const result = await generateSummaryFeedback(
         session.sessionId,
-        session.lessonId
+        session.lessonId,
+        user.id // Pass userId to filter by unlocked lessons
       );
       personalizeFeedback = result.feedback;
       recommendedSubLesson = result.recommendedSubLesson;
@@ -218,6 +216,6 @@ export async function POST(req: NextRequest) {
       { status: 500 }
     );
   } finally {
-    await prisma.$disconnect().catch(() => {}); // Add this
+    await disconnectPrisma();
   }
 }

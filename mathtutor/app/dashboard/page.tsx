@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { LessonCard } from "@/components/LessonCard";
+import { MasteredStamp } from "@/components/MasteredStamp";
 
 interface LessonProgress {
   lessonId: string;
@@ -194,17 +195,8 @@ export default function DashboardPage() {
                 locked={lesson.locked}
               />
 
-              {/* Status indicator */}
-              {lesson.completed && (
-                <motion.div
-                  initial={{ scale: 0, rotate: -180 }}
-                  animate={{ scale: 1, rotate: 0 }}
-                  transition={{ type: "spring", stiffness: 100 }}
-                  className="absolute top-4 right-4 text-3xl drop-shadow-lg"
-                >
-                  ✅
-                </motion.div>
-              )}
+              {/* Mastered Stamp */}
+              {lesson.completed && <MasteredStamp />}
 
               {lesson.locked && (
                 <motion.div

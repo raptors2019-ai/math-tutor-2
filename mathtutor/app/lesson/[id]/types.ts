@@ -97,6 +97,7 @@ export interface QuizState {
   // Session info
   sessionId: string | null;
   lessonId: string;
+  lessonTitle?: string;
 
   // Question progression
   currentQuestionIndex: number;

@@ -100,6 +100,7 @@ export function QuizContainer({ lessonId }: QuizContainerProps) {
       setState((prev) => ({
         ...prev,
         sessionId: data.sessionId,
+        lessonTitle: data.lessonTitle,
         questions: data.questions,
         totalQuestions: data.totalQuestions,
         isLoading: false,
@@ -384,6 +385,16 @@ export function QuizContainer({ lessonId }: QuizContainerProps) {
           {/* Quiz Content */}
           <div className="flex flex-col items-center justify-center flex-1">
             <div className="w-full max-w-2xl space-y-8">
+              {/* Quiz Title */}
+              <div className="text-center mb-4">
+                <h2 className="kid-heading text-4xl md:text-5xl mb-2">
+                  {state.lessonTitle}
+                </h2>
+                <p className="text-2xl font-bold text-kid-blue-700">
+                  Quiz {lessonId.split("-")[1]}
+                </p>
+              </div>
+
               {/* Question Display */}
               <QuestionDisplay
                 question={currentQuestion.question}

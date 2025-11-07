@@ -78,10 +78,6 @@ export function ResultsScreen({
     }
   }, [allLessonsCompleted, passed, router]);
 
-  const handleBackToLesson = () => {
-    router.push(`/lesson-info/${lessonId}`);
-  };
-
   // Memoize confetti particles to avoid recomputing on every render
    
   const confettiParticles = useMemo(() => {
@@ -202,16 +198,12 @@ export function ResultsScreen({
                 <p className="text-sm text-gray-700 mb-3">
                   {recommendedSubLesson.description}
                 </p>
-                <button
-                  onClick={() =>
-                    router.push(
-                      `/lesson/${lessonId}/sub-lesson/${recommendedSubLesson.id}`
-                    )
-                  }
-                  className="w-full rounded-lg bg-yellow-500 hover:bg-yellow-600 px-4 py-2 text-white font-bold transition-colors text-sm"
+                <a
+                  href={`/lesson-info/${recommendedSubLesson.lessonId}`}
+                  className="inline-block w-full text-center rounded-lg bg-yellow-500 hover:bg-yellow-600 px-4 py-2 text-white font-bold transition-colors text-sm"
                 >
                   Review This Topic ✏️
-                </button>
+                </a>
               </div>
             )}
           </div>
@@ -252,12 +244,12 @@ export function ResultsScreen({
 
               {/* Back to Lesson or Home Button */}
               {!passed ? (
-                <button
-                  onClick={handleBackToLesson}
-                  className="rounded-2xl bg-blue-500 hover:bg-blue-600 px-6 py-4 text-lg font-bold text-white transition-colors"
+                <a
+                  href={`/lesson-info/${lessonId}`}
+                  className="inline-block text-center rounded-2xl bg-blue-500 hover:bg-blue-600 px-6 py-4 text-lg font-bold text-white transition-colors"
                 >
                   Back to Lesson 📖
-                </button>
+                </a>
               ) : (
                 <button
                   onClick={onHome}

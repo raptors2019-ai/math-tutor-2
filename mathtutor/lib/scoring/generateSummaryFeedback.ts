@@ -22,6 +22,7 @@ export interface SummaryFeedbackResult {
   feedback: string;
   recommendedSubLesson?: {
     id: string;
+    lessonId: string;
     title: string;
     description: string;
   };
@@ -33,11 +34,13 @@ export interface SummaryFeedbackResult {
  *
  * @param sessionId - The quiz session ID
  * @param lessonId - The lesson being attempted
+ * @param userId - The user ID to check unlocked lessons
  * @returns Object with personalized feedback and recommended sub-lesson
  */
 export async function generateSummaryFeedback(
   sessionId: string,
-  lessonId: string
+  lessonId: string,
+  userId?: string
 ): Promise<SummaryFeedbackResult> {
   try {
     // Get all incorrect responses for this session
@@ -72,9 +75,11 @@ export async function generateSummaryFeedback(
       .join("\n");
 
     // Get recommended sub-lesson based on top error pattern
+    // Pass userId to filter by unlocked lessons
     const recommendedSubLesson = await getRecommendedSubLesson(
       lessonId,
-      topError
+      topError,
+      userId
     );
 
     // If no OpenAI, use fallback
@@ -153,14 +158,48 @@ export async function generateSummaryFeedback(
 
 /**
  * Find recommended sub-lesson based on error pattern
+ * Only recommends from lessons that are unlocked based on user progress
  */
 async function getRecommendedSubLesson(
   lessonId: string,
-  topError: ErrorPattern
+  topError: ErrorPattern,
+  userId?: string
 ): Promise<
-  { id: string; title: string; description: string } | undefined
+  { id: string; lessonId: string; title: string; description: string } | undefined
 > {
   try {
+    // Determine which lessons are unlocked
+    let unlockedLessonIds: string[] = ["lesson-1"]; // Lesson 1 always unlocked
+
+    if (userId) {
+      try {
+        // Check if lesson 2 is unlocked (requires lesson 1 completion)
+        const lesson1Progress = await prisma.userProgress.findUnique({
+          where: {
+            userId_lessonId: { userId, lessonId: "lesson-1" },
+          },
+        });
+
+        if (lesson1Progress?.completed) {
+          unlockedLessonIds.push("lesson-2");
+
+          // Check if lesson 3 is unlocked (requires lesson 2 completion)
+          const lesson2Progress = await prisma.userProgress.findUnique({
+            where: {
+              userId_lessonId: { userId, lessonId: "lesson-2" },
+            },
+          });
+
+          if (lesson2Progress?.completed) {
+            unlockedLessonIds.push("lesson-3");
+          }
+        }
+      } catch (error) {
+        console.warn("[getRecommendedSubLesson] Error checking progress:", error);
+        // If we can't check progress, just use lesson-1
+      }
+    }
+
     // Map error patterns to sub-lesson topics
     // For lesson-1 (Make-10):
     //   - "make-10" or "complement" -> sub-1-1 (Complements to 10)
@@ -195,35 +234,49 @@ async function getRecommendedSubLesson(
         topError.tag.includes(key) || key === topError.tag.split("_")[0]
     );
 
-    if (!tagKey) {
-      // Default to first sub-lesson if no mapping found
-      const firstSubLesson = await prisma.subLesson.findFirst({
-        where: { lessonId },
-        orderBy: { order: "asc" },
-      });
+    let recommendedSubLessonId: string | undefined;
 
-      if (firstSubLesson) {
-        return {
-          id: firstSubLesson.id,
-          title: firstSubLesson.title,
-          description: firstSubLesson.description,
-        };
-      }
-      return undefined;
+    if (tagKey) {
+      recommendedSubLessonId = subLessonMap[tagKey];
     }
 
-    const subLessonId = subLessonMap[tagKey];
+    // If we have a recommended sub-lesson, check if it's from an unlocked lesson
+    if (recommendedSubLessonId) {
+      const subLesson = await prisma.subLesson.findUnique({
+        where: { id: recommendedSubLessonId },
+        include: { lesson: true },
+      });
 
-    // Fetch the sub-lesson from database
-    const subLesson = await prisma.subLesson.findUnique({
-      where: { id: subLessonId },
+      // Only return if the lesson is unlocked
+      if (subLesson && unlockedLessonIds.includes(subLesson.lesson.id)) {
+        return {
+          id: subLesson.id,
+          lessonId: subLesson.lessonId,
+          title: subLesson.title,
+          description: subLesson.description,
+        };
+      }
+    }
+
+    // Fallback: Return first sub-lesson from unlocked lessons
+    const fallbackSubLesson = await prisma.subLesson.findFirst({
+      where: {
+        lesson: {
+          id: {
+            in: unlockedLessonIds,
+          },
+        },
+      },
+      include: { lesson: true },
+      orderBy: [{ lesson: { order: "asc" } }, { order: "asc" }],
     });
 
-    if (subLesson) {
+    if (fallbackSubLesson) {
       return {
-        id: subLesson.id,
-        title: subLesson.title,
-        description: subLesson.description,
+        id: fallbackSubLesson.id,
+        lessonId: fallbackSubLesson.lessonId,
+        title: fallbackSubLesson.title,
+        description: fallbackSubLesson.description,
       };
     }
 
