@@ -63,7 +63,7 @@ export function SubLessonDrills({
     fetchDrills();
   }, [lessonId, subLessonId]);
 
-  const handleAnswer = (answer: number) => {
+  const handleAnswer = async (answer: number) => {
     if (loading || items.length === 0) return;
 
     const item = items[currentIndex];
@@ -185,7 +185,11 @@ export function SubLessonDrills({
       </div>
 
       {/* Question */}
-      <QuestionDisplay question={item.question} />
+      <QuestionDisplay
+        question={item.question}
+        currentNumber={currentIndex + 1}
+        totalQuestions={items.length}
+      />
 
       {/* Feedback */}
       {feedback && (
@@ -201,7 +205,11 @@ export function SubLessonDrills({
       )}
 
       {/* Answer input */}
-      <AnswerForm onSubmit={handleAnswer} disabled={feedback !== null} />
+      <AnswerForm
+        question={item.question}
+        onSubmit={handleAnswer}
+        isSubmitting={feedback !== null}
+      />
     </div>
   );
 }
