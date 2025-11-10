@@ -27,36 +27,66 @@ export function LessonCard({
 }: LessonCardProps) {
   return (
     <div
-      className={`rounded-lg p-6 shadow-md transition-all ${
+      className={`rounded-3xl p-6 shadow-lg transition-all relative overflow-hidden ${
         locked
-          ? "bg-gray-100 opacity-50 cursor-not-allowed"
-          : "bg-white hover:shadow-lg"
+          ? "bg-gradient-to-br from-gray-200 to-gray-300 opacity-60 cursor-not-allowed border-2 border-gray-400"
+          : "bg-white hover:shadow-xl"
       }`}
     >
-      <div className="mb-4 flex items-center justify-between">
-        <h3 className="text-xl font-bold text-kid-blue-700">{title}</h3>
-        {completed && <span className="text-3xl">✅</span>}
-        {locked && <span className="text-3xl">🔒</span>}
-      </div>
-
-      <p className="mb-6 text-gray-700">{description}</p>
-
-      {!locked && (
-        <Link
-          href={`/lesson-info/${id}`}
-          className="inline-block kid-button-primary"
-        >
-          Start Lesson
-        </Link>
-      )}
+      {/* Locked overlay blur effect */}
       {locked && (
-        <button
-          disabled
-          className="inline-block rounded-full bg-gray-300 px-6 py-3 text-lg font-bold text-gray-600 cursor-not-allowed"
-        >
-          Locked
-        </button>
+        <div className="absolute inset-0 bg-gradient-to-b from-gray-400/20 to-gray-500/30 pointer-events-none"></div>
       )}
+
+      <div className="relative z-10">
+        <div className="mb-4 flex items-center justify-between">
+          <h3
+            className={`text-xl font-bold transition-colors ${
+              locked ? "text-gray-600" : "text-kid-blue-700"
+            }`}
+          >
+            {title}
+          </h3>
+          <div className="relative">
+            {completed && <span className="text-3xl">✅</span>}
+            {locked && (
+              <div className="flex items-center gap-1">
+                <span className="text-4xl animate-bounce">🔒</span>
+              </div>
+            )}
+          </div>
+        </div>
+
+        <p
+          className={`mb-6 transition-colors ${
+            locked ? "text-gray-600" : "text-gray-700"
+          }`}
+        >
+          {description}
+        </p>
+
+        {!locked && (
+          <Link
+            href={`/lesson-info/${id}`}
+            className="inline-block kid-button-primary"
+          >
+            Start Lesson
+          </Link>
+        )}
+        {locked && (
+          <div className="flex items-center gap-2">
+            <button
+              disabled
+              className="inline-block rounded-2xl bg-gray-400 px-6 py-3 text-lg font-bold text-gray-700 cursor-not-allowed shadow-md"
+            >
+              🔒 Locked
+            </button>
+            <span className="text-sm font-semibold text-gray-700">
+              Complete previous lesson
+            </span>
+          </div>
+        )}
+      </div>
     </div>
   );
 }

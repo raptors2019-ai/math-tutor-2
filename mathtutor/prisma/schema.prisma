@@ -20,8 +20,9 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  progress UserProgress[]
-  sessions Session[]
+  progress  UserProgress[]
+  sessions  Session[]
+  pageViews PageView[]
 }
 
 // Lesson - Curriculum unit (3 total)
@@ -108,4 +109,21 @@ model SessionResponse {
 
   session Session     @relation(fields: [sessionId], references: [id], onDelete: Cascade)
   item    LessonItem @relation(fields: [itemId], references: [id], onDelete: Cascade)
+}
+
+// PageView - Track user page visits for analytics
+model PageView {
+  id               String   @id @default(cuid())
+  userId           String
+  page             String   // e.g., "/dashboard", "/lesson/abc123"
+  timestamp        DateTime @default(now())
+  sessionDuration  Int?     // Duration in milliseconds
+  referrer         String?
+  metadata         String?  // JSON string for additional data
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([timestamp])
+  @@index([page])
 }
