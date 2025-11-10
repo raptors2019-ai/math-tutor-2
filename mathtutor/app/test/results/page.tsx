@@ -18,7 +18,7 @@ export default function TestResultsPage() {
         title: "Complements to 10 🧩",
         description: "Learn the pairs that make 10! Every number has a special friend that pairs with it to make exactly 10."
       }}
-      nextLessonUnlocked={null}
+      nextLessonUnlocked={undefined}
       onRetry={() => console.log('retry')}
       onHome={() => console.log('home')}
     />

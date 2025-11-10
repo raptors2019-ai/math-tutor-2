@@ -54,6 +54,7 @@ export interface NextLessonInfo {
  */
 export interface SubLessonSuggestion {
   id: string;
+  lessonId: string;
   title: string;
   description: string;
 }
@@ -73,11 +74,7 @@ export interface SessionCompleteResponse {
   summary: {
     topErrors: string[];
     personalizeFeedback?: string;
-    recommendedSubLesson?: {
-      id: string;
-      title: string;
-      description: string;
-    };
+    recommendedSubLesson?: SubLessonSuggestion;
   };
 }
 
@@ -178,11 +175,7 @@ export interface ResultsScreenProps {
   lessonId: string;
   allLessonsCompleted?: boolean;
   personalizeFeedback?: string;
-  recommendedSubLesson?: {
-    id: string;
-    title: string;
-    description: string;
-  };
+  recommendedSubLesson?: SubLessonSuggestion;
   nextLessonUnlocked?: NextLessonInfo;
   onRetry: () => void;
   onHome: () => void;

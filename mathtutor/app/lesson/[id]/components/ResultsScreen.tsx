@@ -199,7 +199,7 @@ export function ResultsScreen({
                   {recommendedSubLesson.description}
                 </p>
                 <a
-                  href={`/lesson-info/${recommendedSubLesson.id}`}
+                  href={`/lesson-info/${recommendedSubLesson.lessonId}`}
                   className="inline-block w-full text-center rounded-lg bg-yellow-500 hover:bg-yellow-600 px-4 py-2 text-white font-bold transition-colors text-sm"
                 >
                   Review This Topic ✏️
