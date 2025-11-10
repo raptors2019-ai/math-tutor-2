@@ -16,13 +16,18 @@ export async function GET() {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    // Get user
-    const user = await prisma.user.findUnique({
+    // Get or create user
+    let user = await prisma.user.findUnique({
       where: { clerkId: userId },
     });
 
     if (!user) {
-      return NextResponse.json({ error: "User not found" }, { status: 404 });
+      user = await prisma.user.create({
+        data: {
+          clerkId: userId,
+          email: `${userId}@clerk.local`,
+        },
+      });
     }
 
     // Get all lessons
